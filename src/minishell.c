@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:21:54 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/07/24 21:03:58 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int	main(int argc, char **argv, char **envp)
 	while (i < 10)
 	{
 		test = readline(user);
-		printf("  %s\n", test);
+		ft_printf(STDOUT_FILENO, "  %s\n", test);
 		free(test);
 		i++;
 	}

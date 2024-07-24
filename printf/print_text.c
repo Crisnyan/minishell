@@ -1,23 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   print_text.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:44:59 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/01/31 13:46:04 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/05/23 16:59:53 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "ft_printf.h"
 
-# include	<stdio.h>
-# include	<stdlib.h>
-# include	<../readline/readline.h>
-# include	<../readline/history.h>
-# include	"../libft/libft.h"
-# include	"../printf/ft_printf.h"
+void	print_char(int c, int *printres, int fd)
+{
+	prot_write((char const *)&c, 1, printres, fd);
+}
 
-#endif
+void	print_string(char *s, int *printres, int fd)
+{
+	int	i;
+
+	i = 0;
+	if (!s)
+	{
+		prot_write("(null)", 6, printres, fd);
+		return ;
+	}
+	while (s[i] != '\0')
+	{
+		prot_write(&s[i], 1, printres, fd);
+		i++;
+	}
+}
