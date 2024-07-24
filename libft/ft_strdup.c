@@ -1,39 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:21:54 by vperez-f         ###   ########.fr       */
+/*   Created: 2023/11/06 16:19:25 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/02/27 15:46:04 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "libft.h"
 
-int	main(int argc, char **argv, char **envp)
+static char	*cpy(char *dest, const char *src)
 {
-	int		i;
-	char	*user;
-	char	*test;
+	int	i;
 
 	i = 0;
-	argv = NULL;
-	if (argc != 1)
-		return (0);
-	while (strncmp(envp[i], "USER", 4))
-		i++;
-	test = strdup(envp[i] + 5);
-	user = ft_strjoin(test, " -- minishell: ");
-	free(test);
-	i = 0;
-	while (i < 10)
+	while (src[i] != '\0')
 	{
-		test = readline(user);
-		printf("  %s\n", test);
-		free(test);
+		dest[i] = src[i];
 		i++;
 	}
-	free(user);
+	dest[i] = '\0';
+	return (dest);
+}
+
+char	*ft_strdup(const char *src)
+{
+	char	*dup;
+	int		i;
+
+	i = 0;
+	while (src[i] != '\0')
+	{
+		i++;
+	}
+	dup = malloc((sizeof(char) * i) + 1);
+	if (!dup)
+		return (NULL);
+	dup = cpy(dup, src);
+	return (dup);
 }

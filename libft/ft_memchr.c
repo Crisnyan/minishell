@@ -1,39 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   ft_memchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:21:54 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/01/05 17:10:04 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/01/29 19:27:03 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "libft.h"
 
-int	main(int argc, char **argv, char **envp)
+void	*ft_memchr(const void *s, int c, size_t n)
 {
-	int		i;
-	char	*user;
-	char	*test;
+	char	*temps;
 
-	i = 0;
-	argv = NULL;
-	if (argc != 1)
-		return (0);
-	while (strncmp(envp[i], "USER", 4))
-		i++;
-	test = strdup(envp[i] + 5);
-	user = ft_strjoin(test, " -- minishell: ");
-	free(test);
-	i = 0;
-	while (i < 10)
+	temps = (char *)s;
+	while (0 < n)
 	{
-		test = readline(user);
-		printf("  %s\n", test);
-		free(test);
-		i++;
+		if (*temps == (char) c)
+		{
+			return (temps);
+		}
+		n--;
+		temps++;
 	}
-	free(user);
+	return (NULL);
 }

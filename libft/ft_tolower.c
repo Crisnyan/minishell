@@ -1,22 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_tolower.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:18:22 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/01/15 14:30:26 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/01/15 14:32:19 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "libft.h"
 
-# include	<stdio.h>
-# include	<stdlib.h>
-# include	<../readline/readline.h>
-# include	<../readline/history.h>
-# include	"../libft/libft.h"
+int	ft_tolower(int c)
+{
+	int	diff;
 
-#endif
+	diff = 'a' - 'A';
+	if ('A' <= c && c <= 'Z')
+		c += diff;
+	return (c);
+}

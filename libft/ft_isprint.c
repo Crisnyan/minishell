@@ -1,22 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_isprint.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42barcel>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:18:22 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/01/12 20:27:41 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/01/15 15:08:39 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "libft.h"
 
-# include	<stdio.h>
-# include	<stdlib.h>
-# include	<../readline/readline.h>
-# include	<../readline/history.h>
-# include	"../libft/libft.h"
+int	ft_isprint(int c)
+{
+	if (32 <= c && c <= 126)
+		return (1);
+	return (0);
+}
+/*
+int main (void)
+{
+	int	i;
 
-#endif
+	i = 0;
+	while ((ft_isprint(i) == isprint(i)) && i < 200)
+		i++;
+	printf("c: %i", i);
+	return(0);
+}*/

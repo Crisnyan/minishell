@@ -1,39 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   ft_strncmp.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:21:54 by vperez-f         ###   ########.fr       */
+/*   Created: 2023/10/30 15:24:13 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/01/29 19:40:31 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "libft.h"
 
-int	main(int argc, char **argv, char **envp)
+int	ft_strncmp(const char *s1, const char *s2, size_t n)
 {
-	int		i;
-	char	*user;
-	char	*test;
+	size_t			i;
+	unsigned char	*ts1;
+	unsigned char	*ts2;
 
 	i = 0;
-	argv = NULL;
-	if (argc != 1)
-		return (0);
-	while (strncmp(envp[i], "USER", 4))
-		i++;
-	test = strdup(envp[i] + 5);
-	user = ft_strjoin(test, " -- minishell: ");
-	free(test);
-	i = 0;
-	while (i < 10)
+	ts1 = (unsigned char *)s1;
+	ts2 = (unsigned char *)s2;
+	if (n == 0)
 	{
-		test = readline(user);
-		printf("  %s\n", test);
-		free(test);
+		return (0);
+	}
+	while ((ts1[i] != '\0') && (ts2[i] != '\0') && (i < n - 1))
+	{
+		if (ts1[i] != ts2[i])
+		{
+			return (ts1[i] - ts2[i]);
+		}
 		i++;
 	}
-	free(user);
+	return (ts1[i] - ts2[i]);
 }

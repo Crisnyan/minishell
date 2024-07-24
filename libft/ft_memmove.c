@@ -1,39 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.c                                        :+:      :+:    :+:   */
+/*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:21:54 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/01/04 19:39:46 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/01/26 22:22:22 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "libft.h"
 
-int	main(int argc, char **argv, char **envp)
+void	*ft_memmove(void *dest, const void *src, size_t n)
 {
-	int		i;
-	char	*user;
-	char	*test;
+	unsigned char	*temp_dest;
+	unsigned char	*temp_src;
+	int				len;
 
-	i = 0;
-	argv = NULL;
-	if (argc != 1)
-		return (0);
-	while (strncmp(envp[i], "USER", 4))
-		i++;
-	test = strdup(envp[i] + 5);
-	user = ft_strjoin(test, " -- minishell: ");
-	free(test);
-	i = 0;
-	while (i < 10)
+	temp_dest = (unsigned char *)dest;
+	temp_src = (unsigned char *)src;
+	len = n - 1;
+	if (src < dest)
 	{
-		test = readline(user);
-		printf("  %s\n", test);
-		free(test);
-		i++;
+		while (0 <= len)
+		{
+			temp_dest[len] = temp_src[len];
+			len--;
+		}
 	}
-	free(user);
+	else if (dest <= src)
+	{
+		ft_memcpy(dest, src, n);
+	}
+	return (dest);
 }
