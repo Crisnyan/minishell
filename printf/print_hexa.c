@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/05 13:49:05 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/05/23 16:58:54 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/07/27 04:48:25 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	print_hexa(unsigned int num, int *printres, int caps, int fd)
 	hexa_base[1] = "0123456789ABCDEF";
 	base = 16;
 	nb = num;
-	if (0 <= nb && nb <= 15)
+	if (nb <= 15)
 		prot_write(&hexa_base[caps][(nb % base)], 1, printres, fd);
 	else
 	{
