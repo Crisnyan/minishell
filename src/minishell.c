@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/28 00:24:09 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/28 01:16:47 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void	cntl_signals(void)
 	sigaction(SIGINT, &cntl_c, NULL);
 	cntl_bar.sa_handler = SIG_IGN;
 	sigemptyset(&cntl_bar.sa_mask);
-	sigaction(SIGQUIT, &cntl_bar, NULL);
+	//sigaction(SIGQUIT, &cntl_bar, NULL);
 }
 
 void	free_split(char **tokens)
