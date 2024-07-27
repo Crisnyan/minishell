@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/27 19:12:53 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/28 00:24:09 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ const char	*get_user(char *env)
 {
 	char 	*user;
 
+	if (!env)
+		return ((void)write(2, "user not found\n", 15), exit(0), NULL);
 	user = ft_strjoin(env, " -- minishell: ");
 	return (user);
 }
@@ -47,23 +49,39 @@ void	cntl_signals(void)
 	sigaction(SIGQUIT, &cntl_bar, NULL);
 }
 
+void	free_split(char **tokens)
+{
+	int	i;
+
+	i = 0;
+	while (tokens[i])
+		free(tokens[i++]);
+	free(tokens);
+}
+
+void	token_loop(char **tokens)
+{
+	int		i;
+
+	i = 0;
+	while (tokens[i])
+		printf("%s\n", tokens[i++]);
+	free_split(tokens);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	int			i;
+	char *line;
 	const char	*user = get_user(getenv("USER"));
-	char		*test;
 
-	cntl_signals();
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
-	i = 0;
-	while (i < 10)
+	cntl_signals();
+	while (1)
 	{
-		test = readline(user);
-		if (!test)
+		line = readline(user);
+		if (!line)
 			return(exit(0), 0);
-		//ft_printf(STDOUT_FILENO, "  %s\n", test);
-		free(test);
-		i++;
+		token_loop(ft_split(line, ' '));
 	}
 }
