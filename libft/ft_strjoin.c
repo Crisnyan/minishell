@@ -12,6 +12,64 @@
 
 #include "libft.h"
 
+char	*ft_strappend(char **s1, char const *s2)
+{
+	int		maxlen;
+	int		i;
+	int		j;
+	char	*str;
+
+	i = 0;
+	j = 0;
+	if (!s1 || !*s1 || !s2)
+		return(NULL);
+	maxlen = ft_strlen(*s1) + ft_strlen(s2);
+	str = (char *)malloc(maxlen + 1);
+	if (str == 0)
+		return (NULL);
+	while ((*s1)[i] != '\0')
+	{
+		str[j++] = (*s1)[i++];
+	}
+	i = 0;
+	while (s2[i] != '\0')
+	{
+		str[j++] = s2[i++];
+	}
+	str[j] = '\0';
+	free(*s1);
+	return (str);
+}
+
+char	*ft_strattach(char const *s1, char **s2)
+{
+	int		maxlen;
+	int		i;
+	int		j;
+	char	*str;
+
+	i = 0;
+	j = 0;
+	if (!s1 || !s2 || !*s2)
+		return(NULL);
+	maxlen = ft_strlen(s1) + ft_strlen(*s2);
+	str = (char *)malloc(maxlen + 1);
+	if (str == 0)
+		return (NULL);
+	while (s1[i] != '\0')
+	{
+		str[j++] = s1[i++];
+	}
+	i = 0;
+	while ((*s2)[i] != '\0')
+	{
+		str[j++] = (*s2)[i++];
+	}
+	str[j] = '\0';
+	free(*s2);
+	return (str);
+}
+
 char	*ft_strjoin(char const *s1, char const *s2)
 {
 	int		maxlen;
