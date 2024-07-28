@@ -59,6 +59,8 @@ char	*format_prompt()
 	user = NULL;
 	user = get_user(getenv("USER"));
 	prompt = getcwd(prompt, 0);
+	if (!prompt)
+		return(user);
 	prompt = ft_strattach(PREFIX, &prompt);
 	prompt = ft_strappend(&prompt, SUFFIX);
 	prompt = ft_strattach(user,&prompt);
