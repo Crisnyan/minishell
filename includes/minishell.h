@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/24 20:44:59 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/07/30 18:25:19 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,5 +32,21 @@
 # include	<../readline/history.h>
 # include	"../libft/libft.h"
 # include	"../printf/ft_printf.h"
+
+typedef struct s_entry
+{
+	char	*key;
+    char    *value;
+	int		is_export;
+}			t_entry;
+
+typedef struct s_dict
+{
+	t_entry	*entries;
+	int		current;
+	int		cap;	
+}			t_dict;
+
+int	init_env(char **envp);
 
 #endif
