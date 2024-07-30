@@ -6,13 +6,13 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/07/24 21:03:45 by vperez-f         ###   ########.fr        #
+#    Updated: 2024/07/30 22:44:09 by cristian         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-CFILES = minishell.c
+CFILES = minishell.c splitty.c
 
 OFILES = $(CFILES:%.c=%.o)
 

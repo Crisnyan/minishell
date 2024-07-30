@@ -6,22 +6,19 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/28 01:16:47 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/30 22:46:13 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
 
-char	*get_user(char *env)
+const char	*get_user(char *env)
 {
 	char 	*user;
 
 	if (!env)
-		env = ft_strjoin(ANSI_COLOR_CYAN_B, "Guest");
-	else
-		env = ft_strjoin(ANSI_COLOR_CYAN_B, env);
-	user = ft_strjoin(env, "@minishell:\x1b[0m");
-	free(env);
+		return ((void)write(2, "user not found\n", 15), exit(0), NULL);
+	user = ft_strjoin(env, " -- minishell: ");
 	return (user);
 }
 
@@ -49,31 +46,12 @@ void	cntl_signals(void)
 	//sigaction(SIGQUIT, &cntl_bar, NULL);
 }
 
-char	*format_prompt()
-{
-	char		*prompt;
-	char		*user;
-
-
-	prompt = NULL;
-	user = NULL;
-	user = get_user(getenv("USER"));
-	prompt = getcwd(prompt, 0);
-	if (!prompt)
-		return(user);
-	prompt = ft_strattach(PREFIX, &prompt);
-	prompt = ft_strappend(&prompt, SUFFIX);
-	prompt = ft_strattach(user,&prompt);
-	free(user);
-	return (prompt);
-}
-
 void	free_split(char **tokens)
 {
 	int	i;
 
 	i = 0;
-	while (tokens && tokens[i])
+	while (tokens[i])
 		free(tokens[i++]);
 	free(tokens);
 }
@@ -90,22 +68,20 @@ void	token_loop(char **tokens)
 
 int	main(int argc, char **argv, char **envp)
 {
-	char	*line;
-	char	*prompt;
+	char *line;
+	const char	*user = get_user(getenv("USER"));
+	t_token		*tok;
 
-	prompt = NULL;
-	line = NULL;
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
 	cntl_signals();
 	while (1)
 	{
-		prompt = format_prompt();
-		line = readline(prompt);
+		line = readline(user);
 		if (!line)
 			return(exit(0), 0);
-		token_loop(ft_split(line, ' '));
-		free(line);
-		free(prompt);
+		tok = minishplit(line);
+		print_token_list(tok);
+		free_list(tok);
 	}
 }
