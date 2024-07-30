@@ -20,7 +20,7 @@ char	*get_user(char *env)
 		env = ft_strjoin(ANSI_COLOR_CYAN_B, "Guest");
 	else
 		env = ft_strjoin(ANSI_COLOR_CYAN_B, env);
-	user = ft_strjoin(env, "@minishell:\x1b[0m");
+	user = ft_strjoin(env, "@minishell\x1b[0m:");
 	free(env);
 	return (user);
 }
