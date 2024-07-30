@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/07/30 07:27:25 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/30 22:04:31 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@
 //{
 //	STRING,
 //	PIPE,
-//	REDIRECT
+//	REDIRECT,
+//	DOLLAR
+//	QUOTE,
+//	DQUOTE
 //};
 //
 //typedef struct s_token
@@ -35,14 +38,24 @@ int	is_quote(char c)
 	return (c == '\"' || c == '\'');
 }
 
-int	is_special(char c)
-{
-	return (c == '<' || c == '>' || c == '|');
+int	is_special(char c) {
+	return (c == '<' || c == '>' || c == '|' || c == '$');
 }
 
 int	is_space(char c)
 {
 	return ((c >= '\a' && c <= '\r') || c == ' ');
+}
+
+int	dollar_flags(char *line)
+{
+	if (line[0] != '$')
+		return (STRING);
+	else if (line[0] == '$' && line[1] == '\'')
+		return (DOLLAR_QUOTE);
+	else if (line[0] == '$' && line[1] == '\"')
+		return (DOLLAR_DQUOTE);
+	return (DOLLAR);
 }
 
 t_token	*create_normal_token(char *line)
@@ -54,13 +67,15 @@ t_token	*create_normal_token(char *line)
 	tok = (t_token *)malloc(sizeof(t_token));
 	if (!tok)
 		return (NULL);
+	if (line[0] == '$')
+		i++;
 	while (!is_space(line[i]) && line[i] 
 	&& !is_special(line[i]) && !is_quote(line[i]))
 		i++;
+	if (line[0] == '$' && line[1] == '$')
+		i++;
 	tok->data = ft_substr(line, 0, i);
-	//printf("%s\n", line);
-	//printf("%s\n", tok->data);
-	tok->flags = STRING;
+	tok->flags = dollar_flags(line);
 	tok->next = NULL;
 	tok->adv = i;
 	return (tok);
@@ -78,7 +93,10 @@ t_token	*create_str_token(char *line, char quote)
 	while (line[i] != quote && line[i])
 		i++;
 	tok->data = ft_substr(line, 1, i - 1);
-	tok->flags = STRING;
+	if (quote == '\'')
+		tok->flags = QUOTE;
+	else 
+		tok->flags = DQUOTE;
 	tok->next = NULL;
 	tok->adv = i + 1;
 	return (tok);
@@ -103,7 +121,7 @@ t_token	*create_special_token(char *line)
 	else if (line[0] == '|')
 	{
 		tok->flags = PIPE;
-		tok->data = ft_substr(line, 0, 1);
+			tok->data = ft_substr(line, 0, 1);
 	}
 	else if (line[0] == '<' || '>')
 	{
@@ -119,17 +137,17 @@ t_token *get_token(char *line, char quote)
 
 	if (is_quote(*line))
 	{
-		//printf("entra 3\n");
+		//printf("entra 1\n");
 		tok = create_str_token(line, quote);
 	}
-	else if (is_special(*line))
+	else if (is_special(*line) && *line != '$')
 	{
 		//printf("entra 2\n");
 		tok = create_special_token(line);
 	}
 	else 
 	{
-		//printf("entra 1\n");
+		//printf("entra 3\n");
 		tok = create_normal_token(line);
 	}
 	return (tok);

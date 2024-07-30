@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/30 07:22:32 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/30 22:04:45 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,12 @@ enum flags
 {
 	STRING,
 	PIPE,
-	REDIRECT
+	REDIRECT,
+	DOLLAR,
+	DOLLAR_QUOTE,
+	DOLLAR_DQUOTE,
+	QUOTE,
+	DQUOTE
 };
 
 typedef struct s_token
