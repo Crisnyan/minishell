@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/28 01:16:47 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/30 07:22:59 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	char *line;
 	const char	*user = get_user(getenv("USER"));
+	t_token		*tok;
 
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
@@ -82,6 +83,8 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(user);
 		if (!line)
 			return(exit(0), 0);
-		token_loop(ft_split(line, ' '));
+		tok = minishplit(line);
+		print_token_list(tok);
+		free_list(tok);
 	}
 }
