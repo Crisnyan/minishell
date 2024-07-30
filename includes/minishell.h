@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/30 18:25:19 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/07/30 20:55:13 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 
 #define PREFIX					ANSI_COLOR_MAGENTA_B
 #define SUFFIX					"\x1b[0m$ "
+#define EXPORT					"declare -x "
 
 # include	<stdio.h>
 # include	<stdlib.h>
@@ -44,9 +45,13 @@ typedef struct s_dict
 {
 	t_entry	*entries;
 	int		current;
-	int		cap;	
+	int		cap;
+	int		init;	
 }			t_dict;
 
-int	init_env(char **envp);
+int		init_env(char **envp, t_dict *m_env);
+
+void    print_env(t_dict *dict);
+void	print_export(t_dict *dict);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/30 19:35:14 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/07/30 21:32:39 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,12 +91,15 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	char	*prompt;
+	t_dict	m_env;
 
 	prompt = NULL;
 	line = NULL;
+	m_env.init = 0;
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
 	cntl_signals();
+	init_env(envp, &m_env);
 	while (1)
 	{
 		prompt = format_prompt();
@@ -104,7 +107,9 @@ int	main(int argc, char **argv, char **envp)
 		if (!line)
 			return(exit(0), 0);
 		if (!ft_strncmp(line, "env", 3))
-			init_env(envp);
+			print_env(&m_env);
+		if (!ft_strncmp(line, "export", 3))
+			print_export(&m_env);
 		//token_loop(ft_split(line, ' '));
 		free(line);
 		free(prompt);
