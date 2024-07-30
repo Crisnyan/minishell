@@ -12,13 +12,16 @@
 
 #include "../includes/minishell.h"
 
-const char	*get_user(char *env)
+char	*get_user(char *env)
 {
-	char 	*user;
+	char	*user;
 
 	if (!env)
-		return ((void)write(2, "user not found\n", 15), exit(0), NULL);
-	user = ft_strjoin(env, " -- minishell: ");
+		env = ft_strjoin(ANSI_COLOR_CYAN_B, "Guest");
+	else
+		env = ft_strjoin(ANSI_COLOR_CYAN_B, env);
+	user = ft_strjoin(env, "@minishell:\x1b[0m");
+	free(env);
 	return (user);
 }
 
@@ -46,6 +49,24 @@ void	cntl_signals(void)
 	//sigaction(SIGQUIT, &cntl_bar, NULL);
 }
 
+char	*format_prompt()
+{
+	char		*prompt;
+	char		*user;
+	
+	prompt = NULL;
+	user = NULL;
+	user = get_user(getenv("USER"));
+	prompt = getcwd(prompt, 0);
+	if (!prompt)
+		return(user);
+	prompt = ft_strattach(PREFIX, &prompt);
+	prompt = ft_strappend(&prompt, SUFFIX);
+	prompt = ft_strattach(user,&prompt);
+	free(user);
+	return (prompt);
+}
+
 void	free_split(char **tokens)
 {
 	int	i;
@@ -68,20 +89,25 @@ void	token_loop(char **tokens)
 
 int	main(int argc, char **argv, char **envp)
 {
-	char *line;
-	const char	*user = get_user(getenv("USER"));
-	t_token		*tok;
+	char	*line;
+	char	*prompt;
+	t_token	*tok;
 
+	prompt = NULL;
+	line = NULL;
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
 	cntl_signals();
 	while (1)
 	{
-		line = readline(user);
+		prompt = format_prompt();
+		line = readline(prompt);
 		if (!line)
 			return(exit(0), 0);
 		tok = minishplit(line);
 		print_token_list(tok);
+		free(line);
+		free(prompt);
 		free_list(tok);
 	}
 }

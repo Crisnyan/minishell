@@ -40,15 +40,19 @@ CC = cc
 
 RM = rm -f
 
+DEF_COLOR = \033[0m
+GREEN = \033[32;1m
+RED = \033[31;1m
+
 all: extra_make $(NAME)
-	@printf "\n$(NAME) COMPILED!\n"
+	@printf "\n$(GREEN)$(NAME) COMPILED!$(DEF_COLOR)\n\n"
 
 extra_make:
-	@printf "EXTRAS: COMPILING...\n$(END)"
+	@printf "EXTRAS: COMPILING...\n"
 	@$(MAKE) -C libft/ --no-print-directory
-	@printf "\nLIBFT: COMPILED!\n"
+	@printf "\n$(GREEN)LIBFT: COMPILED!$(DEF_COLOR)\n\n"
 	@$(MAKE) -C printf/ --no-print-directory
-	@printf "\nFT_PRINTF: COMPILED!\n"
+	@printf "\n$(GREEN)FT_PRINTF: COMPILED!$(DEF_COLOR)\n\n"
 
 $(NAME): $(OBJ) $(PATH_LFT)
 	@$(CC) $(CFLAGS) $(OBJ) $(PATH_LFT) $(PATH_PTF) $(READLINE_FLAGS) -o $(NAME)
