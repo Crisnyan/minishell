@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/01 19:56:25 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/01 20:48:14 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,5 +60,6 @@ char	**fetch_env(t_dict *dict);
 void    print_env(t_dict *dict);
 void	print_export(t_dict *dict);
 void	free_env(char **env);
+void	print_pwd(t_dict *m_env);
 
 #endif

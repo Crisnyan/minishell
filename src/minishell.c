@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/01 20:24:06 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/01 20:48:16 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	*get_user(char *env)
 		env = ft_strjoin(ANSI_COLOR_CYAN_B, "Guest");
 	else
 		env = ft_strjoin(ANSI_COLOR_CYAN_B, env);
-	user = ft_strjoin(env, "@minishell:\x1b[0m");
+	user = ft_strjoin(env, "@minishell\x1b[0m:");
 	free(env);
 	return (user);
 }
@@ -118,6 +118,8 @@ int	main(int argc, char **argv, char **envp)
 			ft_export(line + 6, &m_env);
 		if (!ft_strncmp(line, "unset", 5))
 			ft_unset(line + 6, &m_env);
+		if (!ft_strncmp(line, "pwd", 3))
+			print_pwd(&m_env);
 		//token_loop(ft_split(line, ' '));
 		free(line);
 		free(prompt);

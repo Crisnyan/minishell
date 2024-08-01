@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 17:37:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/01 19:56:27 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/01 20:48:14 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -286,7 +286,6 @@ int	ft_export(char *line, t_dict *dict)
 	int		export;
 	char	**variable;
 
-
 	variable = NULL;
 	export = 0;
 	if (line && line[0] == '\0')
@@ -380,6 +379,17 @@ char	**fetch_env(t_dict *dict)
 	}
 	res[i] = NULL;
 	return (res);
+}
+
+void	print_pwd(t_dict *m_env)
+{
+	char	*pwd;
+
+	pwd = ft_getenv("PWD", m_env);
+	if (!pwd)
+		return ;
+	ft_printf(1, "%s\n", pwd);
+	free(pwd);
 }
 
 int	init_env(char **envp, t_dict *dict)
