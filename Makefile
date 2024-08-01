@@ -6,7 +6,7 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/07/31 05:55:24 by cristian         ###   ########.fr        #
+#    Updated: 2024/08/01 21:24:13 by cristian         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OFILES = $(CFILES:%.c=%.o)
 
 OBJ = $(addprefix $(OBJ_DIR),$(OFILES))
 
-HEADERS = includes/minishell.h includes/splitty.h
+HEADERS = includes/minishell.h includes/splitty.h includes/expansor.h 
 
 DIR_LIBFT = libft/ 
 
