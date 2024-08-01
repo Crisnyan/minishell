@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/30 21:32:39 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/01 20:24:06 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,14 +49,17 @@ void	cntl_signals(void)
 	//sigaction(SIGQUIT, &cntl_bar, NULL);
 }
 
-char	*format_prompt()
+char	*format_prompt(t_dict *m_env)
 {
-	char		*prompt;
-	char		*user;
+	char	*prompt;
+	char	*user;
+	char	*aux;
 	
 	prompt = NULL;
 	user = NULL;
-	user = get_user(getenv("USER"));
+	aux = ft_getenv("USER", m_env);
+	user = get_user(aux);
+	free(aux);
 	prompt = getcwd(prompt, 0);
 	if (!prompt)
 		return(user);
@@ -95,21 +98,26 @@ int	main(int argc, char **argv, char **envp)
 
 	prompt = NULL;
 	line = NULL;
-	m_env.init = 0;
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
 	cntl_signals();
-	init_env(envp, &m_env);
+	if (init_env(envp, &m_env))
+		return (1);
 	while (1)
 	{
-		prompt = format_prompt();
+		prompt = format_prompt(&m_env);
 		line = readline(prompt);
 		if (!line)
 			return(exit(0), 0);
+		if (*line != '\0')
+			add_history(line);
 		if (!ft_strncmp(line, "env", 3))
 			print_env(&m_env);
-		if (!ft_strncmp(line, "export", 3))
-			print_export(&m_env);
+		/*Go to export when token data == export || then while (token.nex.flags ==0) --> are the variables to export */
+		if (!ft_strncmp(line, "export", 6))
+			ft_export(line + 6, &m_env);
+		if (!ft_strncmp(line, "unset", 5))
+			ft_unset(line + 6, &m_env);
 		//token_loop(ft_split(line, ' '));
 		free(line);
 		free(prompt);
