@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/07/30 22:25:38 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/31 06:17:08 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,14 +87,19 @@ t_token	*create_str_token(char *line, char quote)
 	tok = (t_token *)malloc(sizeof(t_token));
 	if (!tok)
 		return (NULL);
-	while (line[i] != quote && line[i])
+	while (line[i] && line[i] != quote)
 		i++;
-	tok->data = ft_substr(line, 1, i - 1);
+	if (i > 1)
+		tok->data = ft_substr(line, 1, i - 1);
+	else
+		tok->data = ft_strdup("");
 	if (quote == '\'')
 		tok->flags = QUOTE;
 	else 
 		tok->flags = DQUOTE;
 	tok->next = NULL;
+	if (i == 1 || !line[i])
+		i--;
 	tok->adv = i + 1;
 	return (tok);
 }
@@ -176,7 +181,8 @@ void	free_list(t_token *head)
 	while (ptr)
 	{
 		ptr = ptr->next;
-		free(head->data);
+		if (head->flags != DOLLAR)
+			free(head->data);
 		free(head);
 		head = ptr;
 	}

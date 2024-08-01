@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/30 22:46:13 by cristian         ###   ########.fr       */
+/*   Updated: 2024/07/31 20:46:44 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	main(int argc, char **argv, char **envp)
 		line = readline(prompt);
 		if (!line)
 			return(exit(0), 0);
-		tok = minishplit(line);
+		tok = expansor(minishplit(line));
 		print_token_list(tok);
 		free(line);
 		free(prompt);
