@@ -6,13 +6,22 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/07/30 20:39:19 by vperez-f         ###   ########.fr        #
+#    Updated: 2024/08/02 18:21:22 by vperez-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-CFILES = minishell.c environment.c
+CFILES = minishell.c 					\
+		 env/environment.c 				\
+		 env/hash_table.c 				\
+		 env/hash_table_utils.c 		\
+		 built-in/pwd.c 				\
+		 built-in/unset.c 				\
+		 built-in/cd.c 					\
+		 built-in/env.c 				\
+		 built-in/export.c 				\
+		 tokenizer/splitty.c
 
 OFILES = $(CFILES:%.c=%.o)
 
@@ -40,21 +49,24 @@ CC = cc
 
 RM = rm -f
 
+GREEN = \033[32;1m
+RESET = \033[0m
+
 all: extra_make $(NAME)
-	@printf "\n$(NAME) COMPILED!\n"
+	@printf "$(GREEN)$(NAME) COMPILED!$(RESET)\n\n"
 
 extra_make:
-	@printf "EXTRAS: COMPILING...\n$(END)"
+	@printf "EXTRAS: COMPILING...\n\n"
 	@$(MAKE) -C libft/ --no-print-directory
-	@printf "\nLIBFT: COMPILED!\n"
+	@printf "$(GREEN)LIBFT: COMPILED!$(RESET)\n\n"
 	@$(MAKE) -C printf/ --no-print-directory
-	@printf "\nFT_PRINTF: COMPILED!\n"
+	@printf "$(GREEN)FT_PRINTF: COMPILED!$(RESET)\n\n"
 
 $(NAME): $(OBJ) $(PATH_LFT)
 	@$(CC) $(CFLAGS) $(OBJ) $(PATH_LFT) $(PATH_PTF) $(READLINE_FLAGS) -o $(NAME)
 
 $(OBJ_DIR)%.o: src/%.c $(DIR_LFT) $(DIR_PTF) $(HEADERS) Makefile
-	@mkdir -p $(OBJ_PATH)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

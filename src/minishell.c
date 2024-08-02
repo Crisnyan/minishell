@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/01 20:48:16 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/02 18:21:37 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,12 +55,11 @@ char	*format_prompt(t_dict *m_env)
 	char	*user;
 	char	*aux;
 	
-	prompt = NULL;
 	user = NULL;
 	aux = ft_getenv("USER", m_env);
 	user = get_user(aux);
 	free(aux);
-	prompt = getcwd(prompt, 0);
+	prompt = getcwd(NULL, 0);
 	if (!prompt)
 		return(user);
 	prompt = ft_strattach(PREFIX, &prompt);
@@ -117,9 +116,11 @@ int	main(int argc, char **argv, char **envp)
 		if (!ft_strncmp(line, "export", 6))
 			ft_export(line + 6, &m_env);
 		if (!ft_strncmp(line, "unset", 5))
-			ft_unset(line + 6, &m_env);
+			ft_unset(line + 5, &m_env);
 		if (!ft_strncmp(line, "pwd", 3))
-			print_pwd(&m_env);
+			print_pwd();
+		if (!ft_strncmp(line, "cd", 2))
+			ft_cd(line + 2);
 		//token_loop(ft_split(line, ' '));
 		free(line);
 		free(prompt);
