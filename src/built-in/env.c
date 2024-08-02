@@ -1,22 +1,34 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expansor.h                                         :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/31 01:25:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/02 19:38:26 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/08/02 17:10:18 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/08/02 17:59:37 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXPANSOR_H
-# define EXPANSOR_H
+#include "../../includes/minishell.h"
 
-# include "env.h"
+void	print_env(t_dict *dict)
+{
+	int	i;
+	int	j;
 
-void	expand(t_token *tok, t_dict *m_env);
-void	rearrange(t_token *dollar, t_token *string);
-t_token *expansor(t_token *tok, t_dict *m_env);
-
-#endif
+	i = 0;
+	j = 0;
+	if (!dict->current)
+		return ;
+	while(i < dict->current)
+	{
+		if (dict->entries[j].key)
+		{
+			if (!dict->entries[j].is_export)
+				printf("%s=%s\n", dict->entries[j].key, dict->entries[j].value);
+			i++;
+		}
+		j++;
+	}
+}

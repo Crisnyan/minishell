@@ -3,21 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   expansor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 01:41:46 by cristian          #+#    #+#             */
-/*   Updated: 2024/07/31 06:00:28 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/02 20:09:36 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
-void	expand(t_token *tok)
+void	expand(t_token *tok, t_dict *m_env)
 {
 	char *expanded;
 	
-	expanded = getenv((const char *)&tok->data[1]);
-	free(tok->data);
+	expanded = ft_getenv(tok->data, m_env);
+	if (tok->data)
+		free(tok->data);
 	tok->data = expanded;
 }
 
@@ -30,7 +31,7 @@ void	rearrange(t_token *dollar, t_token *string)
 	free(string);
 }
 
-t_token *expansor(t_token *tok)
+t_token *expansor(t_token *tok, t_dict *m_env)
 {
 	t_token *head;
 
@@ -38,7 +39,7 @@ t_token *expansor(t_token *tok)
 	while (tok)
 	{
 		if (tok->flags == DOLLAR && !is_space(tok->data[1]))
-			expand(tok);
+			expand(tok, m_env);
 		else if (tok->flags == DOLLAR_QUOTE 
 		|| tok->flags == DOLLAR_DQUOTE)
 			rearrange(tok, tok->next);

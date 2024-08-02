@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/07/31 20:46:44 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/02 20:14:06 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,17 @@ void	cntl_signals(void)
 	//sigaction(SIGQUIT, &cntl_bar, NULL);
 }
 
-char	*format_prompt()
+char	*format_prompt(t_dict *m_env)
 {
-	char		*prompt;
-	char		*user;
+	char	*prompt;
+	char	*user;
+	char	*aux;
 	
-	prompt = NULL;
 	user = NULL;
-	user = get_user(getenv("USER"));
-	prompt = getcwd(prompt, 0);
+	aux = ft_getenv("USER", m_env);
+	user = get_user(aux);
+	free(aux);
+	prompt = getcwd(NULL, 0);
 	if (!prompt)
 		return(user);
 	prompt = ft_strattach(PREFIX, &prompt);
@@ -91,6 +93,7 @@ int	main(int argc, char **argv, char **envp)
 {
 	char	*line;
 	char	*prompt;
+	t_dict	m_env;
 	t_token	*tok;
 
 	prompt = NULL;
@@ -98,13 +101,18 @@ int	main(int argc, char **argv, char **envp)
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
 	cntl_signals();
+	if (init_env(envp, &m_env))
+		return (1);
 	while (1)
 	{
-		prompt = format_prompt();
+		prompt = format_prompt(&m_env);
 		line = readline(prompt);
 		if (!line)
 			return(exit(0), 0);
-		tok = expansor(minishplit(line));
+		if (*line != '\0')
+			add_history(line);
+		tok = expansor(minishplit(line), &m_env);
+		check_built_in(tok, &m_env);
 		print_token_list(tok);
 		free(line);
 		free(prompt);

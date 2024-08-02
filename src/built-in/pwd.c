@@ -1,22 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expansor.h                                         :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/31 01:25:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/02 19:38:26 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/08/02 16:42:12 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/08/02 17:59:29 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXPANSOR_H
-# define EXPANSOR_H
+#include "../../includes/minishell.h"
 
-# include "env.h"
+int	print_pwd()
+{
+	char	*pwd;
 
-void	expand(t_token *tok, t_dict *m_env);
-void	rearrange(t_token *dollar, t_token *string);
-t_token *expansor(t_token *tok, t_dict *m_env);
-
-#endif
+	pwd = getcwd(NULL, 0);
+	if (!pwd)
+	{
+		ft_printf(2, PWD_ERROR);
+		return (-1);
+	}
+	ft_printf(1, "%s\n", pwd);
+	free(pwd);
+	return (0);
+}

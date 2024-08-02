@@ -1,22 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expansor.h                                         :+:      :+:    :+:   */
+/*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/31 01:25:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/02 19:38:26 by vperez-f         ###   ########.fr       */
+/*   Created: 2024/08/02 16:41:03 by vperez-f          #+#    #+#             */
+/*   Updated: 2024/08/02 17:59:39 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXPANSOR_H
-# define EXPANSOR_H
+#include "../../includes/minishell.h"
 
-# include "env.h"
+int	ft_cd(char *path)
+{
+	int	i;
 
-void	expand(t_token *tok, t_dict *m_env);
-void	rearrange(t_token *dollar, t_token *string);
-t_token *expansor(t_token *tok, t_dict *m_env);
-
-#endif
+	i = 0;
+	if (!path)
+		return (0);
+	while (*path == ' ')
+		path++;
+	if (chdir(path))
+	{
+		ft_printf(2, CD_ERROR, path);
+		return (1);
+	}
+	return (0);
+}

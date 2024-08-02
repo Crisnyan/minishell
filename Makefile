@@ -6,13 +6,24 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/08/01 21:24:13 by cristian         ###   ########.fr        #
+#    Updated: 2024/08/02 20:13:55 by vperez-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-CFILES = minishell.c splitty.c expansor.c
+CFILES = minishell.c 					\
+		 env/environment.c 				\
+		 env/hash_table.c 				\
+		 env/hash_table_utils.c 		\
+		 built-in/pwd.c 				\
+		 built-in/unset.c 				\
+		 built-in/cd.c 					\
+		 built-in/env.c 				\
+		 built-in/export.c 				\
+		 built-in/checker.c				\
+		 tokenizer/splitty.c			\
+		 expansor/expansor.c
 
 OFILES = $(CFILES:%.c=%.o)
 
@@ -58,7 +69,7 @@ $(NAME): $(OBJ) $(PATH_LFT)
 	@$(CC) $(CFLAGS) $(OBJ) $(PATH_LFT) $(PATH_PTF) $(READLINE_FLAGS) -o $(NAME)
 
 $(OBJ_DIR)%.o: src/%.c $(DIR_LFT) $(DIR_PTF) $(HEADERS) Makefile
-	@mkdir -p $(OBJ_PATH)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   splitty.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/07/31 06:17:08 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/02 19:03:19 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../includes/minishell.h"
+#include "../../includes/minishell.h"
 
 //enum flags
 //{
@@ -125,7 +125,7 @@ t_token	*create_special_token(char *line)
 		tok->flags = PIPE;
 			tok->data = ft_substr(line, 0, 1);
 	}
-	else if (line[0] == '<' || '>')
+	else if (line[0] == '<' || line[0] == '>')
 	{
 		tok->flags = REDIRECT;
 		tok->data = ft_substr(line, 0, 1);
