@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 01:41:46 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/02 20:09:36 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 13:35:54 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@ void	expand(t_token *tok, t_dict *m_env)
 {
 	char *expanded;
 	
-	expanded = ft_getenv(tok->data, m_env);
-	if (tok->data)
-		free(tok->data);
-	tok->data = expanded;
+	expanded = ft_strtrim(tok->data, "$");
+	free(tok->data);
+	tok->data = ft_getenv(expanded, m_env);
+	free(expanded);
 }
 
 void	rearrange(t_token *dollar, t_token *string)

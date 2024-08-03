@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:16:09 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 20:14:30 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 14:02:12 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,13 @@
 #define PREFIX					ANSI_COLOR_MAGENTA_B
 #define SUFFIX					"\x1b[0m$ "
 #define EXPORT_PREFIX			"declare -x "
+
 #define EXPORT_ERROR			"minishell: export: '%s': not a valid identifier\n"
-#define PWD_ERROR				"Unable to determine current working directory\n"
-#define CD_ERROR				"cd: no such file or directory: %s\n"
+#define PWD_ERROR				"minishell: Unable to determine current working directory\n"
+#define CD_ERROR_DIR			"minishell: cd: no such file or directory: %s\n"
+#define CD_ERROR_ARGS			"minishell: cd: too many arguments\n"
+#define CD_ERROR_SET			"minishell: cd: %s not set\n"
+#define ENV_ERROR				"env: \'%s\': No such file or directory\n"
 
 typedef struct s_entry
 {
@@ -38,7 +42,7 @@ int     ft_strcmp(const char *s1, const char *s2);
 int		init_env(char **envp, t_dict *m_env);
 int		ft_export(char *line, t_dict *dict, int mode);
 int		ft_unset(char *line, t_dict *dict);
-int     ft_cd(char *path);
+int     ft_cd(char *path, t_dict *dict);
 int     print_pwd();
 int     search_index(char *key, t_dict *dict);
 int		check_built_in(t_token *token, t_dict *m_env);

@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/02 19:03:19 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 13:35:12 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,7 +181,7 @@ void	free_list(t_token *head)
 	while (ptr)
 	{
 		ptr = ptr->next;
-		if (head->flags != DOLLAR)
+		if (head->data)
 			free(head->data);
 		free(head);
 		head = ptr;
