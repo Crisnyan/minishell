@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/03 13:35:12 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 14:52:25 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ t_token	*create_str_token(char *line, char quote)
 	else 
 		tok->flags = DQUOTE;
 	tok->next = NULL;
-	if (i == 1 || !line[i])
+	if ((i == 1 && !line[i]) || !line[i])
 		i--;
 	tok->adv = i + 1;
 	return (tok);
