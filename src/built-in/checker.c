@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 20:12:00 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/03 14:02:04 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 23:34:05 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,14 @@ int	check_built_in(t_token *token, t_dict *m_env)
 			return (ft_printf(2, CD_ERROR_ARGS), 1);
 		if (token->data)
 			ft_cd(token->data, m_env);
+	}
+	else if (!ft_strcmp(token->data, "exit"))
+	{
+		return (ft_exit(token));
+	}
+	else if (!ft_strcmp(token->data, "echo"))
+	{
+		return (ft_echo(token), 0);
 	}
 	return (0);
 }

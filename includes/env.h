@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:16:09 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/03 14:02:12 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 23:30:42 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,13 @@ int     ft_cd(char *path, t_dict *dict);
 int     print_pwd();
 int     search_index(char *key, t_dict *dict);
 int		check_built_in(t_token *token, t_dict *m_env);
+int	ft_exit(t_token *token);
 
 char	*ft_getenv(char *key, t_dict *dict);
 char	**fetch_env(t_dict *dict);
 char	**split_env(char *line);
 
+void	ft_echo(t_token *token);
 void    print_env(t_dict *dict);
 void	print_export(t_dict *dict);
 void	free_env(char **env);

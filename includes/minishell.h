@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 18:59:50 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/03 18:55:33 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 # include	<stdlib.h>
 # include 	<signal.h>
 # include 	<unistd.h>
+# include 	<limits.h>
 # include	<../readline/readline.h>
 # include	<../readline/history.h>
 # include	"../libft/libft.h"
