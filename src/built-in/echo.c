@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 23:31:48 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/04 01:04:27 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/04 02:33:21 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,12 @@ static void	print_tokens(t_token *token, int newline)
 {
 	while (token)
 	{
+		if (token->flags == REDIRECT || token->flags == PIPE)
+			break;
 		printf("%s", token->data);
 		token = token->next;
 		if (token)
-		{
-			if (token->flags == REDIRECT || token->flags == PIPE)
-				break;
-		printf(" ");
-		}
+			printf(" ");
 	}
 	if (newline)
 		printf("\n");
