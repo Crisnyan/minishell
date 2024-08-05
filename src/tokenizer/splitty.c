@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/03 13:35:12 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/05 20:18:43 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,10 @@ t_token	*create_special_token(char *line)
 	if ((line[0] == '<' && line[1] == '<')
 	|| (line[0] == '>' && line[1] == '>'))
 	{
-		tok->flags = REDIRECT;
+		if ((line[0] == '<' && line[1] == '<'))
+			tok->flags = I_REDIRECT;
+		else if ((line[0] == '>' && line[1] == '>'))
+			tok->flags = O_REDIRECT;
 		tok->adv = 2;
 		tok->data = ft_substr(line, 0, 2);
 	}
@@ -127,7 +130,10 @@ t_token	*create_special_token(char *line)
 	}
 	else if (line[0] == '<' || line[0] == '>')
 	{
-		tok->flags = REDIRECT;
+		if (line[0] == '<')
+			tok->flags = I_REDIRECT;
+		else if (line[0] == '>')
+			tok->flags = O_REDIRECT;
 		tok->data = ft_substr(line, 0, 1);
 	}
 	return (tok);

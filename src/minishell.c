@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/03 14:02:20 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/05 20:05:05 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,8 @@ int	main(int argc, char **argv, char **envp)
 	if (init_env(envp, &m_env))
 		return (1);
 	process.m_env = &m_env;
+	process.og_fd[0] = dup(0);
+	process.og_fd[1] = dup(1);
 	while (1)
 	{
 		prompt = format_prompt(&m_env);
@@ -187,6 +189,12 @@ int	main(int argc, char **argv, char **envp)
 			return(exit(0), 0);
 		if (*line != '\0')
 			add_history(line);
+		if (*line == '\0')
+		{
+			free(line);
+			free(prompt);
+			continue;
+		}
 		tok = expansor(minishplit(line), &m_env);
 		process.n_pipes = count_pipes(tok);
 		process.cmd_list = split_cmd(tok, process.n_pipes);
@@ -197,6 +205,5 @@ int	main(int argc, char **argv, char **envp)
 		free_cmd_list(process.cmd_list, process.n_pipes);
 		free(line);
 		free(prompt);
-		//free_list(tok);
 	}
 }

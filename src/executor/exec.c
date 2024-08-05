@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/03 14:17:34 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/05 20:33:41 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,12 @@ int	exec_err(int err, char *msg)
 	}
 	else
 		return (exec_err_aux(err, msg));
+}
+
+void	close_pipes(int *pipefd)
+{
+	close(pipefd[0]);
+	close(pipefd[1]);
 }
 
 void	free_arr(char **arr)
@@ -113,7 +119,10 @@ char	*get_path(char *cmd_name, char **all_paths)
 				return (cmd);
 			}
 			else
-				exit(exec_err(ERR_FAILEDEXE, cmd));
+			{
+				exec_err(ERR_FAILEDEXE, cmd);
+				return (NULL);
+			}
 		}
 		free(cmd);
 		i++;
@@ -217,40 +226,123 @@ void	free_cmd(t_cmd *cmd)
 	}	
 }
 
+void	do_redirection(t_process *process, t_cmd *cmd, t_token *target, int mode)
+{
+
+	if (pipe(cmd->pipe))
+		process->stat = exec_err(ERR_STD, NULL);
+	if (mode == I_REDIRECT)
+	{
+		cmd->in_file = open(target->data, O_RDONLY);
+		if (cmd->in_file < 0)
+		{
+			if (access(target->data, F_OK))
+				process->stat = (exec_err(ERR_NOFILE, target->data));
+			else if (access(target->data, R_OK))
+				process->stat = (exec_err(ERR_PERM, target->data));
+			else
+				process->stat = (exec_err(ERR_STD, NULL));
+		}
+		printf("INPUTTT\n");
+		if (dup2(cmd->in_file, STDIN_FILENO))
+			process->stat = exec_err(ERR_STD, NULL);
+	}
+	else if (mode == O_REDIRECT)
+	{
+		cmd->out_file = open(target->data, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+		if (cmd->out_file < 0)
+			process->stat = (exec_err(ERR_OUTF, target->data));
+		printf("OUTTPUTTT\n");
+		if (dup2(cmd->out_file, STDOUT_FILENO))
+			process->stat = exec_err(ERR_STD, NULL);
+	}
+}
+/*Maybe just save the files and do th redirs in-child || to avoid going back to stdin/stdout etc...
+		Fix multiple redirssssssssss*/
+t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
+{
+	t_token	*aux;
+	t_token	*temp;
+	t_token	*redir_cmd;
+	int		mode;
+
+	(void)process;
+	(void)cmd;
+	mode = 0;
+	redir_cmd = cmd_list;
+	while (cmd_list)
+	{
+		printf("WHILE: %s\n", cmd_list->data);
+		if (cmd_list->next && (cmd_list->next->flags == I_REDIRECT || cmd_list->next->flags == O_REDIRECT))
+		{
+			temp = cmd_list;
+			cmd_list = cmd_list->next;
+			if (cmd_list->next)
+			{
+				if (cmd_list->flags == O_REDIRECT)
+					mode = O_REDIRECT;
+				else if (cmd_list->flags == I_REDIRECT)
+					mode = I_REDIRECT;
+				cmd_list = cmd_list->next;
+				printf("do redir %s\n", cmd_list->data);
+				do_redirection(process, cmd, cmd_list, mode);
+				aux = cmd_list->next;
+				cmd_list->next = NULL;
+				cmd_list = aux;
+			}
+			else
+			{
+				ft_printf(2, "minishell: syntax error near unexpected token\n");
+				break;
+			}
+			free_list(temp->next);
+			temp->next = cmd_list;
+		}
+		cmd_list = cmd_list->next;
+	}
+	return (redir_cmd);
+}
+/*First built do not do it in-child // otherwise cd etc doesnt work*/
 int	ft_executor(t_process *process)
 {
 	int		i;
 	t_cmd	cmd;
 	pid_t	child;
+	t_token	*cmd_tokens;
 
 	i = -1;
 	if (!process->cmd_list)
 		return (-1);
-	while (++i < (process->n_pipes + 1))		
+	while (++i < (process->n_pipes + 1))
 	{
 		ft_printf(2, "exec\n");
-		if (check_built_in(process->cmd_list[i], process->m_env, &process->stat) != 99)
-		{
-			ft_printf(2, "cont 1\n");
-			continue;
-		}
-		if (format_cmd(&cmd, process->m_env, process->cmd_list[i], &process->stat))
-		{
-			ft_printf(2, "cont 2\n");
-			free_cmd(&cmd);
-			continue;
-		}
+		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
+		close_pipes(cmd.pipe);
+		print_token_list(cmd_tokens);
 		child = fork();
 		if (child < 0)
 			process->stat = exec_err(ERR_MEM, " fork:");
 		else if (child == 0)
 		{
+			if (check_built_in(cmd_tokens, process->m_env, &process->stat) != 99)
+			{
+				ft_printf(2, "cont 1\n");
+				exit (process->stat);
+			}
+			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
+			{
+				ft_printf(2, "cont 2 %i\n");
+				free_cmd(&cmd);
+				exit (process->stat);
+			}			
 			execve(cmd.path, cmd.args, cmd.envp);
-			exec_err(ERR_STD, NULL);
-			return (0);
+			free_cmd(&cmd);
+			process->stat = exec_err(ERR_STD, NULL);
+			exit (process->stat);
 		}
 		waitpid(child, &process->stat, 0);
-		free_cmd(&cmd);
+		dup2(process->og_fd[0], STDIN_FILENO);
+		dup2(process->og_fd[1], STDOUT_FILENO);
 	}
 	return (0);
 }

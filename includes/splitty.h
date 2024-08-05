@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   splitty.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 01:25:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/07/31 01:25:47 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/05 18:16:14 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ enum flags
 {
 	STRING,
 	PIPE,
-	REDIRECT,
+	I_REDIRECT,
+	O_REDIRECT,
 	DOLLAR,
 	DOLLAR_QUOTE,
 	DOLLAR_DQUOTE,
