@@ -166,10 +166,13 @@ void	print_token(t_token *token)
 
 void	print_token_list(t_token *head)
 {
-	while (head)
+	t_token *temp;
+
+	temp = head;
+	while (temp)
 	{
-		print_token(head);
-		head = head->next;
+		print_token(temp);
+		temp = temp->next;
 	}
 }
 

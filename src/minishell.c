@@ -89,12 +89,87 @@ void	token_loop(char **tokens)
 	free_split(tokens);
 }
 
+int	count_pipes(t_token *list)
+{
+	int	pipes;
+	t_token	*temp;
+
+	pipes = 0;
+	temp = list;
+	while (temp)
+	{
+		if (temp->flags == PIPE)
+			pipes++;
+		temp = temp->next;
+	}
+	return (pipes);
+}
+
+void	free_cmd_list(t_token **cmd_list, int n)
+{
+	int	i;
+
+	i = 0;
+	while (i < (n + 1))
+	{
+		if (cmd_list[i])
+			free_list(cmd_list[i]);
+		i++;
+	}
+	free(cmd_list);
+}
+
+t_token	**split_cmd(t_token *tokens, int pipes)
+{
+	int	i;
+	t_token	*temp;
+	t_token	**cmd_list;
+
+	i = 0;
+	cmd_list = (t_token **)calloc(pipes + 1, sizeof(t_token *));
+	if (!cmd_list)
+		return (NULL);
+	while (i < (pipes + 1) && tokens)
+	{
+		cmd_list[i] = tokens;
+		while (tokens)
+		{
+			if (tokens->next && tokens->next->flags == PIPE)
+			{
+				temp = tokens->next;
+				tokens->next = NULL;
+				tokens = temp->next;
+				temp->next = NULL;
+				free_list(temp);
+				break;
+			}
+			tokens = tokens->next;
+		}
+		i++;
+	}
+	return (cmd_list);
+}
+
+void	print_list(t_token **list, int n)
+{
+	int	i;
+
+	i = 0;
+	while (i < n + 1)
+	{
+		if (list && list[i])
+			print_token_list(list[i]);
+		i++;
+	}
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	char	*line;
-	char	*prompt;
-	t_dict	m_env;
-	t_token	*tok;
+	char		*line;
+	char		*prompt;
+	t_token		*tok;
+	t_dict		m_env;
+	t_process	process;
 
 	prompt = NULL;
 	line = NULL;
@@ -103,6 +178,7 @@ int	main(int argc, char **argv, char **envp)
 	cntl_signals();
 	if (init_env(envp, &m_env))
 		return (1);
+	process.m_env = &m_env;
 	while (1)
 	{
 		prompt = format_prompt(&m_env);
@@ -112,10 +188,15 @@ int	main(int argc, char **argv, char **envp)
 		if (*line != '\0')
 			add_history(line);
 		tok = expansor(minishplit(line), &m_env);
-		check_built_in(tok, &m_env);
-		print_token_list(tok);
+		process.n_pipes = count_pipes(tok);
+		process.cmd_list = split_cmd(tok, process.n_pipes);
+		//print_list(process.cmd_list, process.n_pipes);
+		ft_executor(&process);
+		printf("------%i\n", process.stat);
+		//print_token_list(tok);
+		free_cmd_list(process.cmd_list, process.n_pipes);
 		free(line);
 		free(prompt);
-		free_list(tok);
+		//free_list(tok);
 	}
 }

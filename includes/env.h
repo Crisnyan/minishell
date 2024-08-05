@@ -45,7 +45,7 @@ int		ft_unset(char *line, t_dict *dict);
 int     ft_cd(char *path, t_dict *dict);
 int     print_pwd();
 int     search_index(char *key, t_dict *dict);
-int		check_built_in(t_token *token, t_dict *m_env);
+int		check_built_in(t_token *token, t_dict *m_env, int *stat);
 
 char	*ft_getenv(char *key, t_dict *dict);
 char	**fetch_env(t_dict *dict);

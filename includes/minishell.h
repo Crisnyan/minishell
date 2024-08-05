@@ -23,6 +23,7 @@
 # include	"../printf/ft_printf.h"
 
 # include	"splitty.h"
+# include	"executor.h"
 # include	"expansor.h"
 # include 	"env.h"
 
