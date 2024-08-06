@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 17:37:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 20:07:43 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/06 17:38:41 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,10 @@ char	**fetch_env(t_dict *dict)
 	res = (char **)calloc(dict->current + 1, sizeof(char *));
 	if (!res)
 		return (NULL);
-	while(i < dict->current)
+	while(i < dict->current && j < dict->cap)
 	{
-		if (dict->entries[j].key && dict->entries[j].value && !dict->entries->is_export)
-		{
+		if (dict->entries[j].key && !dict->entries[j].is_export)
+		{		
 			res[i] = ft_strdup(dict->entries[j].key);
 			res[i] = ft_strappend(&res[i], "=");
 			res[i] = ft_strappend(&res[i], dict->entries[j].value);

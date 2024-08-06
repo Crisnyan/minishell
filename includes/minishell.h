@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 18:59:50 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/06 16:59:27 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,12 @@
 # include	"../libft/libft.h"
 # include	"../printf/ft_printf.h"
 
+# include 	"structs.h"
+
+# include 	"env.h"
 # include	"splitty.h"
 # include	"executor.h"
 # include	"expansor.h"
-# include 	"env.h"
 
 #define ANSI_COLOR_RED_B		"\x1b[31;1m"
 #define ANSI_COLOR_GREEN_B		"\x1b[32;1m"
