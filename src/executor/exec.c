@@ -59,8 +59,10 @@ int	exec_err(int err, char *msg)
 
 void	close_pipes(int *pipefd)
 {
-	close(pipefd[0]);
-	close(pipefd[1]);
+	if (pipefd[0] != -1)
+		close(pipefd[0]);
+	if (pipefd[1] != -1)
+		close(pipefd[1]);
 }
 
 void	free_arr(char **arr)
@@ -244,6 +246,7 @@ void	do_redirection(t_process *process, t_cmd *cmd, t_token *target, int mode)
 		printf("INPUTTT\n");
 		if (dup2(cmd->in_file, STDIN_FILENO))
 			process->stat = exec_err(ERR_STD, NULL);
+		close(cmd->in_file);
 	}
 	else if (mode == O_REDIRECT)
 	{
@@ -253,6 +256,7 @@ void	do_redirection(t_process *process, t_cmd *cmd, t_token *target, int mode)
 		printf("OUTTPUTTT\n");
 		if (dup2(cmd->out_file, STDOUT_FILENO))
 			process->stat = exec_err(ERR_STD, NULL);
+		close(cmd->out_file);
 	}
 }
 /*Maybe just save the files and do th redirs in-child || to avoid going back to stdin/stdout etc...
@@ -336,10 +340,9 @@ int	exec_no_pipes(t_process *process)
 		ft_printf(2, "BUILTIN PARENT\n");
 		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
 		check_built_in(cmd_tokens, process);
-		close(cmd.in_file);
-		close(cmd.out_file);
 		dup2(process->og_fd[0], STDIN_FILENO);
 		dup2(process->og_fd[1], STDOUT_FILENO);
+		close_pipes(process->og_fd);
 		return (0);
 	}
 	else
@@ -371,20 +374,20 @@ int	wait_child_processes(pid_t *childs, int amount)
 {
 	pid_t	pid;
 	int		i;
-	int		tmp;
+	int		stat_loc;
 	int		status;
 
 	i = 0;
 	status = 1;
 	while (i < amount)
 	{
-		pid = waitpid(-1, &tmp, 0);
+		pid = waitpid(-1, &stat_loc, 0);
 		printf("CHILD: %i\n", pid);
 		if (pid < 0)
 			printf("ERROR\n");
-		if (pid == childs[amount - 1] && WIFEXITED(tmp))
+		if (pid == childs[amount - 1] && WIFEXITED(stat_loc))
 		{
-			status = WEXITSTATUS(tmp);
+			status = WEXITSTATUS(stat_loc);
 			printf("HUEHUE\n");
 		}
 		i++;
@@ -400,12 +403,12 @@ int	exec_pipes(t_process *process)
 	t_token	*cmd_tokens;
 
 	i = -1;
-	if (pipe(process->pipe))
-		process->stat = exec_err(ERR_STD, NULL);
 	child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
 	while (++i < (process->n_pipes + 1))
 	{
 		ft_printf(2, "exec %i\n", i);
+		if (pipe(process->pipe))
+			process->stat = exec_err(ERR_STD, NULL);
 		child[i] = fork();
 		if (child[i] < 0)
 			process->stat = exec_err(ERR_MEM, " fork:");
@@ -418,6 +421,7 @@ int	exec_pipes(t_process *process)
 					free_cmd(&cmd);
 					exit(exec_err(ERR_STD, NULL));
 				}
+				close(process->pipe[0]);
 			}
 			if (i != process->n_pipes)
 			{
@@ -426,6 +430,16 @@ int	exec_pipes(t_process *process)
 					free_cmd(&cmd);
 					exit(exec_err(ERR_STD, NULL));
 				}
+				close(process->pipe[1]);
+			}
+			else
+			{
+				if (dup2(process->og_fd[1], STDOUT_FILENO) < 0)
+				{
+					free_cmd(&cmd);
+					exit(exec_err(ERR_STD, NULL));
+				}
+				close(process->og_fd[1]);
 			}
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
 			if (check_built_in(cmd_tokens, process) != 99)
@@ -439,16 +453,14 @@ int	exec_pipes(t_process *process)
 				free_cmd(&cmd);
 				exit (process->stat);
 			}
-			close_pipes(process->pipe);
 			execve(cmd.path, cmd.args, cmd.envp);
 			free_cmd(&cmd);
 			process->stat = exec_err(ERR_STD, NULL);
 			exit (process->stat);
 		}
 		printf("P|| Child %i: ID: %i\n", i, child[i]);
-		waitpid(child[i], &process->stat, 0);
 	}
-	//process->stat = wait_child_processes(child, process->n_pipes + 1);
+	process->stat = wait_child_processes(child, process->n_pipes + 1);
 	free(child);
 	return (0);
 }
