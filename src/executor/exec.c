@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/06 19:27:26 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/07 19:41:53 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,6 +207,7 @@ int	format_cmd(t_cmd *cmd, t_dict *m_env, t_token *tokens, int *stat)
 	free_arr(all_paths);
 	return (0);
 }
+
 void	free_cmd(t_cmd *cmd)
 {
 	if (cmd)
@@ -268,7 +269,7 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 	(void)cmd;
 	mode = 0;
 	redir_cmd = cmd_list;
-	previous = cmd_list;
+	previous = NULL;
 	while (cmd_list)
 	{
 		if (cmd_list->flags == I_REDIRECT || cmd_list->flags == O_REDIRECT)
@@ -291,8 +292,11 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 				ft_printf(2, "minishell: syntax error near unexpected token\n");
 				break;
 			}
-			free_list(previous->next);
-			previous->next = cmd_list;
+			if (previous != NULL)
+				previous->next = cmd_list;
+			else
+				redir_cmd = cmd_list;
+			free_list(temp);
 			continue;
 		}
 		previous = cmd_list;
@@ -301,43 +305,111 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 	return (redir_cmd);
 }
 
-int	ft_executor(t_process *process)
+int	ghetto_builtin(t_token *cmd_tokens)
 {
-	int		i;
+	int	res;
+
+	res = 0;
+	while (cmd_tokens)
+	{
+		if (!ft_strcmp(cmd_tokens->data, "pwd")
+			|| !ft_strcmp(cmd_tokens->data, "cd")
+			|| !ft_strcmp(cmd_tokens->data, "env")
+			|| !ft_strcmp(cmd_tokens->data, "export")
+			|| !ft_strcmp(cmd_tokens->data, "unset"))
+		{
+			res = 1;
+		}
+		cmd_tokens = cmd_tokens->next;
+	}
+	return (res);
+}
+
+int	exec_no_pipes(t_process *process)
+{
 	t_cmd	cmd;
 	pid_t	child;
 	t_token	*cmd_tokens;
-
-	i = -1;
-	if (!process->cmd_list)
-		return (-1);
-	if (!process->n_pipes)
+	
+	if (ghetto_builtin(process->cmd_list[0]))
 	{
-		ft_printf(2, "NO PIPES\n");
+		ft_printf(2, "BUILTIN PARENT\n");
 		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
-		print_token_list(cmd_tokens);
-		if (check_built_in(cmd_tokens, process) != 99)
-		{
-			ft_printf(2, "BUILTIN PARENT\n");
-			close(cmd.in_file);
-			close(cmd.out_file);
-			dup2(process->og_fd[0], STDIN_FILENO);
-			dup2(process->og_fd[1], STDOUT_FILENO);
-			return (0);
-		}
+		check_built_in(cmd_tokens, process);
+		close(cmd.in_file);
+		close(cmd.out_file);
+		dup2(process->og_fd[0], STDIN_FILENO);
+		dup2(process->og_fd[1], STDOUT_FILENO);
+		return (0);
 	}
 	else
 	{
-		if (process->n_pipes && pipe(process->pipe))
-			process->stat = exec_err(ERR_STD, NULL);
-	}
-	while (++i < (process->n_pipes + 1))
-	{
-		ft_printf(2, "exec\n");
 		child = fork();
 		if (child < 0)
-			process->stat = exec_err(ERR_MEM, " fork:");
+			return (-1);
 		else if (child == 0)
+		{
+			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
+			print_token_list(cmd_tokens);
+			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
+			{
+				ft_printf(2, "cont 2 %i\n");
+				free_cmd(&cmd);
+				exit (process->stat);
+			}
+			execve(cmd.path, cmd.args, cmd.envp);
+			free_cmd(&cmd);
+			process->stat = exec_err(ERR_STD, NULL);
+			exit (process->stat);
+		}
+		waitpid(child, &process->stat, 0);
+	}
+	return (0);
+}
+
+int	wait_child_processes(pid_t *childs, int amount)
+{
+	pid_t	pid;
+	int		i;
+	int		tmp;
+	int		status;
+
+	i = 0;
+	status = 1;
+	while (i < amount)
+	{
+		pid = waitpid(-1, &tmp, 0);
+		printf("CHILD: %i\n", pid);
+		if (pid < 0)
+			printf("ERROR\n");
+		if (pid == childs[amount - 1] && WIFEXITED(tmp))
+		{
+			status = WEXITSTATUS(tmp);
+			printf("HUEHUE\n");
+		}
+		i++;
+	}
+	return (status);
+}
+
+int	exec_pipes(t_process *process)
+{
+	int		i;
+	t_cmd	cmd;
+	pid_t	*child;
+	t_token	*cmd_tokens;
+
+	i = -1;
+	if (pipe(process->pipe))
+		process->stat = exec_err(ERR_STD, NULL);
+	child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
+	while (++i < (process->n_pipes + 1))
+	{
+		ft_printf(2, "exec %i\n", i);
+		child[i] = fork();
+		if (child[i] < 0)
+			process->stat = exec_err(ERR_MEM, " fork:");
+		else if (child[i] == 0)
 		{
 			if (i != 0)
 			{
@@ -355,8 +427,7 @@ int	ft_executor(t_process *process)
 					exit(exec_err(ERR_STD, NULL));
 				}
 			}
-			if (process->n_pipes)
-				cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
+			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
 			if (check_built_in(cmd_tokens, process) != 99)
 			{
 				ft_printf(2, "cont 1\n");
@@ -374,9 +445,27 @@ int	ft_executor(t_process *process)
 			process->stat = exec_err(ERR_STD, NULL);
 			exit (process->stat);
 		}
-		waitpid(child, &process->stat, 0);
-		dup2(process->og_fd[0], STDIN_FILENO);
-		dup2(process->og_fd[1], STDOUT_FILENO);
+		printf("P|| Child %i: ID: %i\n", i, child[i]);
+		waitpid(child[i], &process->stat, 0);
+	}
+	//process->stat = wait_child_processes(child, process->n_pipes + 1);
+	free(child);
+	return (0);
+}
+
+int	ft_executor(t_process *process)
+{
+	if (!process->cmd_list)
+		return (-1);
+	if (!process->n_pipes)
+	{
+		exec_no_pipes(process);
+		return (0);
+	}
+	else
+	{
+		exec_pipes(process);
+		return (0);
 	}
 	return (0);
 }

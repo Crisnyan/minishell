@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/06 17:13:16 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/07 18:53:50 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,6 +178,7 @@ int	main(int argc, char **argv, char **envp)
 	cntl_signals();
 	if (init_env(envp, &m_env))
 		return (1);
+	process.stat = 0;
 	process.m_env = &m_env;
 	process.og_fd[0] = dup(0);
 	process.og_fd[1] = dup(1);
