@@ -1,7 +1,7 @@
 //////////|-- TO FIX --|\\\\\\\\\\
 
 - Tokenizer "" --> lo parsea como dos tokens vacios en vez de uno
-
+- Check espacios + enter (da segfault)
 
 
 

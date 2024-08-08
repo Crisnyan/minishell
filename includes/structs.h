@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:57:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/06 17:02:43 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/08 13:28:30 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ typedef struct s_cmd
 {
 	int		in_file;
 	int		out_file;
-	int		pipe[2];
 	char	*name;
 	char	*path;
 	char	**args;
