@@ -339,7 +339,6 @@ int	exec_no_pipes(t_process *process)
 	
 	if (ghetto_builtin(process->cmd_list[0]))
 	{
-		ft_printf(2, "BUILTIN PARENT\n");
 		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
 		check_built_in(cmd_tokens, process);
 		dup2(process->og_fd[0], STDIN_FILENO);
@@ -386,12 +385,9 @@ int	wait_child_processes(pid_t *childs, int amount)
 		pid = waitpid(-1, &stat_loc, 0);
 		ft_printf(2, "CHILD: %i\n", pid);
 		if (pid < 0)
-			ft_printf(2, "ERROR\n");
+			exec_err(ERR_STD, "pid:");
 		if (pid == childs[amount - 1] && WIFEXITED(stat_loc))
-		{
 			status = WEXITSTATUS(stat_loc);
-			ft_printf(2, "LAST\n");
-		}
 		i++;
 	}
 	return (status);
@@ -418,10 +414,8 @@ int	exec_pipes(t_process *process)
 		{
 			if (i != process->n_pipes)
 			{
-				ft_printf(2, "++ CHILD: %i -- DUP PIPE 1 into OUT\n", getpid());
 				if (dup2(process->pipe[1], STDOUT_FILENO) < 0)
 				{
-					ft_printf(2, "SECOND\n");
 					exit(exec_err(ERR_STD, NULL));
 				}
 			}
@@ -429,26 +423,20 @@ int	exec_pipes(t_process *process)
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
 			if (check_built_in(cmd_tokens, process) != 99)
 			{
-				//ft_printf(2, "cont 1\n");
 				exit (process->stat);
 			}
 			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
 			{
-				ft_printf(2, "cont 2 %i\n");
 				free_cmd(&cmd);
 				exit (process->stat);
 			}
-			ft_printf(2, "INTO EXECVE\n");
 			execve(cmd.path, cmd.args, cmd.envp);
-			ft_printf(2, "EXECVE FAILED\n");
 			free_cmd(&cmd);
 			process->stat = exec_err(ERR_STD, NULL);
 			exit (process->stat);
 		}
-		//ft_printf(2, "P|| Child %i: ID: %i\n", i, child[i]);
 		if (dup2(process->pipe[0], STDIN_FILENO) < 0)
 		{
-			ft_printf(2, "FIRST\n");
 			exit(exec_err(ERR_STD, NULL));
 		}
 		close_pipes(process->pipe);
@@ -457,7 +445,6 @@ int	exec_pipes(t_process *process)
 	free(child);
 	dup2(process->og_fd[0], STDIN_FILENO);
 	dup2(process->og_fd[1], STDOUT_FILENO);
-	close_pipes(process->og_fd);
 	return (0);
 }
 
