@@ -343,7 +343,6 @@ int	exec_no_pipes(t_process *process)
 		check_built_in(cmd_tokens, process);
 		dup2(process->og_fd[0], STDIN_FILENO);
 		dup2(process->og_fd[1], STDOUT_FILENO);
-		close_pipes(process->og_fd);
 		return (0);
 	}
 	else
