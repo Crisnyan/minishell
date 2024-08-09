@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/09 13:59:15 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/09 14:18:35 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -229,50 +229,49 @@ void	free_cmd(t_cmd *cmd)
 	cmd = NULL;
 }
 
-void	do_redirection(t_process *process, t_cmd *cmd, t_token *target, int mode)
+void	input_redirection(t_process *process, t_cmd *cmd, t_token *target)
 {
-	if (mode == I_REDIRECT)
+	cmd->in_file = open(target->data, O_RDONLY);
+	if (cmd->in_file < 0)
 	{
-		cmd->in_file = open(target->data, O_RDONLY);
-		if (cmd->in_file < 0)
-		{
-			if (access(target->data, F_OK))
-				process->stat = (exec_err(ERR_NOFILE, target->data));
-			else if (access(target->data, R_OK))
-				process->stat = (exec_err(ERR_PERM, target->data));
-			else
-				process->stat = (exec_err(ERR_STD, NULL));
-			return ;
-		}
-		if (dup2(cmd->in_file, STDIN_FILENO) < 0)
-		{
-			process->stat = exec_err(ERR_STD, NULL);
-			close(cmd->in_file);
-			return ;
-
-		}
+		if (access(target->data, F_OK))
+			process->stat = (exec_err(ERR_NOFILE, target->data));
+		else if (access(target->data, R_OK))
+			process->stat = (exec_err(ERR_PERM, target->data));
+		else
+			process->stat = (exec_err(ERR_STD, NULL));
+		return ;
+	}
+	if (dup2(cmd->in_file, STDIN_FILENO) < 0)
+	{
+		process->stat = exec_err(ERR_STD, NULL);
 		close(cmd->in_file);
+		return ;
+
 	}
-	else if (mode == O_REDIRECT)
-	{
-		cmd->out_file = open(target->data, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
-		if (cmd->out_file < 0)
-		{
-			if (access(target->data, R_OK))
-				process->stat = (exec_err(ERR_PERM, target->data));
-			else
-				process->stat = (exec_err(ERR_STD, NULL));
-			return ;
-		}
-		if (dup2(cmd->out_file, STDOUT_FILENO) < 0)
-		{
-			process->stat = exec_err(ERR_STD, NULL);
-			close(cmd->out_file);
-			return ;
-		}
-		close(cmd->out_file);
-	}
+	close(cmd->in_file);	
 }
+
+void	output_redirection(t_process *process, t_cmd *cmd, t_token *target)
+{
+	cmd->out_file = open(target->data, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+	if (cmd->out_file < 0)
+	{
+		if (access(target->data, R_OK))
+			process->stat = (exec_err(ERR_PERM, target->data));
+		else
+			process->stat = (exec_err(ERR_STD, NULL));
+		return ;
+	}
+	if (dup2(cmd->out_file, STDOUT_FILENO) < 0)
+	{
+		process->stat = exec_err(ERR_STD, NULL);
+		close(cmd->out_file);
+		return ;
+	}
+	close(cmd->out_file);
+}
+
 /*Maybe just save the files and do th redirs in-child || to avoid going back to stdin/stdout etc...
 		Fix multiple redirssssssssss*/
 t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
@@ -281,9 +280,7 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 	t_token	*temp;
 	t_token	*previous;
 	t_token	*redir_cmd;
-	int		mode;
 
-	mode = 0;
 	redir_cmd = cmd_list;
 	previous = NULL;
 	while (cmd_list)
@@ -295,10 +292,9 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 			if (cmd_list)
 			{
 				if (temp->flags == O_REDIRECT)
-					mode = O_REDIRECT;
+					output_redirection(process, cmd, cmd_list);
 				else if (temp->flags == I_REDIRECT)
-					mode = I_REDIRECT;
-				do_redirection(process, cmd, cmd_list, mode);
+					input_redirection(process, cmd, cmd_list);
 				aux = cmd_list->next;
 				cmd_list->next = NULL;
 				cmd_list = aux;
