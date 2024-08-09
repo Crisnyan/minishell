@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/08 14:10:09 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/09 13:59:15 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,9 +93,7 @@ int	check_path(char *path)
 		while (path[i])
 		{
 			if (path[i] == '/')
-			{
 				return (1);
-			}
 			i++;
 		}
 		return (0);
@@ -244,20 +242,34 @@ void	do_redirection(t_process *process, t_cmd *cmd, t_token *target, int mode)
 				process->stat = (exec_err(ERR_PERM, target->data));
 			else
 				process->stat = (exec_err(ERR_STD, NULL));
+			return ;
 		}
-		ft_printf(2, "INPUTTT\n");
-		if (dup2(cmd->in_file, STDIN_FILENO))
+		if (dup2(cmd->in_file, STDIN_FILENO) < 0)
+		{
 			process->stat = exec_err(ERR_STD, NULL);
+			close(cmd->in_file);
+			return ;
+
+		}
 		close(cmd->in_file);
 	}
 	else if (mode == O_REDIRECT)
 	{
 		cmd->out_file = open(target->data, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
 		if (cmd->out_file < 0)
-			process->stat = (exec_err(ERR_OUTF, target->data));
-		ft_printf(2, "OUTTPUTTT\n");
-		if (dup2(cmd->out_file, STDOUT_FILENO))
+		{
+			if (access(target->data, R_OK))
+				process->stat = (exec_err(ERR_PERM, target->data));
+			else
+				process->stat = (exec_err(ERR_STD, NULL));
+			return ;
+		}
+		if (dup2(cmd->out_file, STDOUT_FILENO) < 0)
+		{
 			process->stat = exec_err(ERR_STD, NULL);
+			close(cmd->out_file);
+			return ;
+		}
 		close(cmd->out_file);
 	}
 }
@@ -271,8 +283,6 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 	t_token	*redir_cmd;
 	int		mode;
 
-	(void)process;
-	(void)cmd;
 	mode = 0;
 	redir_cmd = cmd_list;
 	previous = NULL;
@@ -336,7 +346,7 @@ int	exec_no_pipes(t_process *process)
 	t_cmd	cmd;
 	pid_t	child;
 	t_token	*cmd_tokens;
-	
+
 	if (ghetto_builtin(process->cmd_list[0]))
 	{
 		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
@@ -349,14 +359,15 @@ int	exec_no_pipes(t_process *process)
 	{
 		child = fork();
 		if (child < 0)
-			return (-1);
+		{
+			process->stat = exec_err(ERR_MEM, " fork:");
+			return (process->stat);
+		}
 		else if (child == 0)
 		{
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
-			print_token_list(cmd_tokens);
 			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
 			{
-				ft_printf(2, "cont 2 %i\n");
 				free_cmd(&cmd);
 				exit (process->stat);
 			}
@@ -365,7 +376,7 @@ int	exec_no_pipes(t_process *process)
 			process->stat = exec_err(ERR_STD, NULL);
 			exit (process->stat);
 		}
-		waitpid(child, &process->stat, 0);
+		process->stat = wait_child_processes(&child, 1);
 	}
 	return (0);
 }
@@ -382,7 +393,6 @@ int	wait_child_processes(pid_t *childs, int amount)
 	while (i < amount)
 	{
 		pid = waitpid(-1, &stat_loc, 0);
-		ft_printf(2, "CHILD: %i\n", pid);
 		if (pid < 0)
 			exec_err(ERR_STD, "pid:");
 		if (pid == childs[amount - 1] && WIFEXITED(stat_loc))
@@ -403,27 +413,28 @@ int	exec_pipes(t_process *process)
 	child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
 	while (++i < (process->n_pipes + 1))
 	{
-		ft_printf(2, "exec %i\n", i);
 		if (pipe(process->pipe))
+		{
 			process->stat = exec_err(ERR_STD, NULL);
+			break ;
+		}
 		child[i] = fork();
 		if (child[i] < 0)
+		{
 			process->stat = exec_err(ERR_MEM, " fork:");
+			break ;
+		}
 		else if (child[i] == 0)
 		{
 			if (i != process->n_pipes)
 			{
 				if (dup2(process->pipe[1], STDOUT_FILENO) < 0)
-				{
 					exit(exec_err(ERR_STD, NULL));
-				}
 			}
 			close_pipes(process->pipe);
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
 			if (check_built_in(cmd_tokens, process) != 99)
-			{
 				exit (process->stat);
-			}
 			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
 			{
 				free_cmd(&cmd);
@@ -435,9 +446,7 @@ int	exec_pipes(t_process *process)
 			exit (process->stat);
 		}
 		if (dup2(process->pipe[0], STDIN_FILENO) < 0)
-		{
 			exit(exec_err(ERR_STD, NULL));
-		}
 		close_pipes(process->pipe);
 	}
 	process->stat = wait_child_processes(child, process->n_pipes + 1);
