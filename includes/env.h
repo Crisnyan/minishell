@@ -24,27 +24,31 @@
 #define CD_ERROR_SET			"minishell: cd: %s not set\n"
 #define ENV_ERROR				"env: \'%s\': No such file or directory\n"
 
-int     ft_strcmp(const char *s1, const char *s2);
-int		init_env(char **envp, t_dict *m_env);
-int		ft_export(char *line, t_dict *dict, int mode);
-int		ft_unset(char *line, t_dict *dict);
-int     ft_cd(char *path, t_dict *dict);
-int     print_pwd();
-int     search_index(char *key, t_dict *dict);
-int		check_built_in(t_token *token, t_process *process);
 
-char	*ft_getenv(char *key, t_dict *dict);
-char	**fetch_env(t_dict *dict);
-char	**split_env(char *line);
 
-void    print_env(t_dict *dict);
-void	print_export(t_dict *dict);
-void	free_env(char **env);
-void	free_entry(t_entry *entry);
-void	add_word(char *key, char *value, t_dict *dict, int export);
+int				ft_strcmp(const char *s1, const char *s2);
+int				init_env(char **envp, t_dict *m_env);
+int				ft_export(char *line, t_dict *dict, int mode);
+int				ft_unset(char *line, t_dict *dict);
+int				ft_cd(char *path, t_dict *dict);
+int				print_pwd();
+int				search_index(char *key, t_dict *dict);
+int				check_built_in(t_token *token, t_process *process);
 
-void	free_env(char **env);
-void	free_entries(t_entry *entries, int n);
+char			*ft_getenv(char *key, t_dict *dict);
+char			**fetch_env(t_dict *dict);
+char			**split_env(char *line);
+
+void			print_env(t_dict *dict);
+void			print_export(t_dict *dict);
+void			add_word(char *key, char *value, t_dict *dict, int export);
+
+void            expand_dict(t_dict *dict);
+void			free_env(char **env);
+void			free_entry(t_entry *entry);
+void			free_entries(t_entry *entries, int n);
+
+t_entry			create_entry(char *key, char *value, int export);
 
 unsigned int	hash(char *word);
 

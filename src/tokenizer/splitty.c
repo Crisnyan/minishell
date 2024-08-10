@@ -117,9 +117,9 @@ t_token	*create_special_token(char *line)
 	|| (line[0] == '>' && line[1] == '>'))
 	{
 		if ((line[0] == '<' && line[1] == '<'))
-			tok->flags = I_REDIRECT;
+			tok->flags = HEREDOC;
 		else if ((line[0] == '>' && line[1] == '>'))
-			tok->flags = O_REDIRECT;
+			tok->flags = APPEND;
 		tok->adv = 2;
 		tok->data = ft_substr(line, 0, 2);
 	}

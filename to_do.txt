@@ -2,6 +2,8 @@
 
 - Tokenizer "" --> lo parsea como dos tokens vacios en vez de uno
 - Check espacios + enter (da segfault)
+- Export mirar bien los caracteres q permite tanto para key como value!
+- Decidir como tokenizamos "" o "         " etc... (para cmdos, export etc...)
 
 
 

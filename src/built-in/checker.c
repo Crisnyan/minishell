@@ -35,7 +35,9 @@ int	check_built_in(t_token *token, t_process *process)
 	else if (!ft_strcmp(token->data, "export"))
 	{
 		if (!token->next || token->next->flags == PIPE)
+		{
 			return (process->stat = ft_export(token->data, process->m_env, 1));
+		}
 		token = token->next;
 		while (token && !token->flags)
 		{

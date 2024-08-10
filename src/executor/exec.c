@@ -119,11 +119,8 @@ char	*get_path(char *cmd_name, char **all_paths)
 				free(temp);
 				return (cmd);
 			}
-			else
-			{
-				exec_err(ERR_FAILEDEXE, cmd);
-				return (NULL);
-			}
+			exec_err(ERR_FAILEDEXE, cmd);
+			return (NULL);
 		}
 		free(cmd);
 		i++;
@@ -169,7 +166,7 @@ char	**get_args(t_token *token_args)
 }
 
 char	**get_all_paths(t_dict *m_env)
- {
+{
 	char	*env_path;
 	char	**res;
 
@@ -180,9 +177,16 @@ char	**get_all_paths(t_dict *m_env)
 		free(env_path);
 	}
 	else
+	{
 		res = (char **)calloc(1, sizeof(char *));
+		if (!res)
+		{
+			exec_err(ERR_MEM, " calloc:");
+			return (NULL);
+		}
+	}
 	return (res);
- }
+}
 
 int	format_cmd(t_cmd *cmd, t_dict *m_env, t_token *tokens, int *stat)
 {
@@ -272,8 +276,6 @@ void	output_redirection(t_process *process, t_cmd *cmd, t_token *target)
 	close(cmd->out_file);
 }
 
-/*Maybe just save the files and do th redirs in-child || to avoid going back to stdin/stdout etc...
-		Fix multiple redirssssssssss*/
 t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 {
 	t_token	*aux;
@@ -349,7 +351,7 @@ int	exec_no_pipes(t_process *process)
 		check_built_in(cmd_tokens, process);
 		dup2(process->og_fd[0], STDIN_FILENO);
 		dup2(process->og_fd[1], STDOUT_FILENO);
-		return (0);
+		return (process->stat);
 	}
 	else
 	{
@@ -374,7 +376,7 @@ int	exec_no_pipes(t_process *process)
 		}
 		process->stat = wait_child_processes(&child, 1);
 	}
-	return (0);
+	return (process->stat);
 }
 
 int	wait_child_processes(pid_t *childs, int amount)
@@ -407,6 +409,11 @@ int	exec_pipes(t_process *process)
 
 	i = -1;
 	child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
+	if (!child)
+	{
+		process->stat = exec_err(ERR_MEM, " malloc:");
+		return (process->stat);
+	}
 	while (++i < (process->n_pipes + 1))
 	{
 		if (pipe(process->pipe))
@@ -449,22 +456,23 @@ int	exec_pipes(t_process *process)
 	free(child);
 	dup2(process->og_fd[0], STDIN_FILENO);
 	dup2(process->og_fd[1], STDOUT_FILENO);
-	return (0);
+	return (process->stat);
 }
 
 int	ft_executor(t_process *process)
 {
 	if (!process->cmd_list)
 		return (-1);
+	process->stat = 0;
 	if (!process->n_pipes)
 	{
 		exec_no_pipes(process);
-		return (0);
+		return (process->stat);
 	}
 	else
 	{
 		exec_pipes(process);
-		return (0);
+		return (process->stat);
 	}
-	return (0);
+	return (process->stat);
 }
