@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/07 18:53:50 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:33:06 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	handle_c(int signal)
 {
 	if (signal == SIGINT)
 	{
-		printf("\n");
+		ft_printf(STDOUT_FILENO, "\n");
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
@@ -110,13 +110,16 @@ void	free_cmd_list(t_token **cmd_list, int n)
 	int	i;
 
 	i = 0;
-	while (i < (n + 1))
+	if (cmd_list)
 	{
-		if (cmd_list[i])
-			free_list(cmd_list[i]);
-		i++;
+		while (i < (n + 1))
+		{
+			if (cmd_list[i])
+				free_list(cmd_list[i]);
+			i++;
+		}
+		free(cmd_list);
 	}
-	free(cmd_list);
 }
 
 t_token	**split_cmd(t_token *tokens, int pipes)
@@ -163,6 +166,45 @@ void	print_list(t_token **list, int n)
 	}
 }
 
+void	init_process(t_process *process, t_dict *m_env)
+{
+	process->stat = 0;
+	process->heredoc_count = 0;
+	process->m_env = m_env;
+	process->cmd_list = NULL;
+	process->og_fd[0] = dup(0);
+	process->og_fd[1] = dup(1);	
+}
+
+int	parse(t_token *token, t_process *process)
+{
+	int		heredoc_count;
+	t_token *temp;
+
+	heredoc_count = 0;
+	temp = token;
+	while (temp)
+	{
+		if ((temp->flags == PIPE || temp->flags == I_REDIRECT || temp->flags == O_REDIRECT || temp->flags == HEREDOC || temp->flags == O_APPEND)
+			&& (!temp->next || temp->next->flags == PIPE || temp->next->flags == I_REDIRECT || temp->next->flags == O_REDIRECT || temp->next->flags == HEREDOC || temp->next->flags == O_APPEND))
+			{
+				ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+				process->stat = 2;
+				return(2);
+			}
+		else if (temp->flags == HEREDOC)
+			heredoc_count++;
+		temp = temp->next;
+	}
+	if (heredoc_count > 15)
+	{
+		ft_printf(2, "minishell: maximum here-document count exceeded\n");
+		process->stat = 2;
+		return (2);
+	}
+	return (0);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char		*line;
@@ -178,10 +220,7 @@ int	main(int argc, char **argv, char **envp)
 	cntl_signals();
 	if (init_env(envp, &m_env))
 		return (1);
-	process.stat = 0;
-	process.m_env = &m_env;
-	process.og_fd[0] = dup(0);
-	process.og_fd[1] = dup(1);
+	init_process(&process, &m_env);
 	while (1)
 	{
 		prompt = format_prompt(&m_env);
@@ -197,13 +236,18 @@ int	main(int argc, char **argv, char **envp)
 			continue;
 		}
 		tok = expansor(minishplit(line), &m_env);
+		if (parse(tok, &process))
+		{
+			free_list(tok);
+			free(line);
+			free(prompt);
+			continue;
+		}
 		process.n_pipes = count_pipes(tok);
 		process.cmd_list = split_cmd(tok, process.n_pipes);
-		//print_list(process.cmd_list, process.n_pipes);
 		ft_executor(&process);
-		printf("------%i\n", process.stat);
-		//print_token_list(tok);
 		free_cmd_list(process.cmd_list, process.n_pipes);
+		printf("------%i\n", process.stat);
 		free(line);
 		free(prompt);
 	}

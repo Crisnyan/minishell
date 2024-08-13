@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/09 14:18:35 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/13 19:01:33 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,11 @@ int	exec_err(int err, char *msg)
 		else if (err == ERR_NOFILE)
 			ft_printf(STDERR_FILENO, "minishell: no such file or dir: %s\n", msg);
 		return (1);
+	}
+	else if(err == ERR_HDMAX)
+	{
+		ft_printf(STDERR_FILENO, "minishell: maximum here-document count exceeded\n");
+		return (2);
 	}
 	else
 		return (exec_err_aux(err, msg));
@@ -233,6 +238,85 @@ void	free_cmd(t_cmd *cmd)
 	cmd = NULL;
 }
 
+void	clean_here_docs(t_process *process)
+{
+	int		i;
+	char	*filename;
+
+	i = 0;
+	(void)process;
+	while (i < 16)
+	{
+		filename = ft_itoa(i + 1);
+		filename = ft_strattach("temp/Here-doc", &filename);
+		unlink(filename);
+		free(filename);
+		i++;
+	}
+}
+
+void	heredoc_prompt(t_process *process, char *delim)
+{
+	char	*line;
+	int		og_stdin;
+
+	og_stdin = dup(process->og_fd[0]);
+	if (!isatty(STDIN_FILENO))
+	{
+		dup2(og_stdin, STDIN_FILENO);
+		close(og_stdin);
+	}
+	while (1)
+	{
+		line = readline("> ");
+		if (!line)
+			return ;
+		if (!ft_strcmp(line, delim))
+		{
+			free(line);
+			return ;
+		}
+		line = ft_strappend(&line, "\n");
+		ft_printf(process->heredoc[process->heredoc_count], line);
+		free(line);
+	}
+}
+
+void	heredoc_redirection(t_process *process, t_token *target)
+{
+	char *filename;
+
+	if (process->heredoc_count > 15)
+		exit (exec_err(ERR_HDMAX, NULL));
+	filename = ft_itoa(process->heredoc_count + 1);
+	filename = ft_strattach("temp/Here-doc", &filename);
+	process->heredoc[process->heredoc_count] = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0644);
+	if (process->heredoc[process->heredoc_count] < 0)
+	{
+		if (access(filename, F_OK))
+			process->stat = (exec_err(ERR_NOFILE, filename));
+		else if (access(filename, R_OK))
+			process->stat = (exec_err(ERR_PERM, filename));
+		else
+			process->stat = (exec_err(ERR_STD, NULL));
+		free(filename);
+		return ;
+	}
+	heredoc_prompt(process, target->data);
+	close(process->heredoc[process->heredoc_count]);
+	process->heredoc[process->heredoc_count] = open(filename, O_RDONLY);
+	if (dup2(process->heredoc[process->heredoc_count], STDIN_FILENO) < 0)
+	{
+		process->stat = exec_err(ERR_STD, NULL);
+		close(process->heredoc[process->heredoc_count]);
+		free(filename);
+		return ;
+	}
+	close(process->heredoc[process->heredoc_count]);
+	free(filename);
+	process->heredoc_count++;
+}
+
 void	input_redirection(t_process *process, t_cmd *cmd, t_token *target)
 {
 	cmd->in_file = open(target->data, O_RDONLY);
@@ -251,14 +335,33 @@ void	input_redirection(t_process *process, t_cmd *cmd, t_token *target)
 		process->stat = exec_err(ERR_STD, NULL);
 		close(cmd->in_file);
 		return ;
-
 	}
 	close(cmd->in_file);	
 }
 
+void	append_redirection(t_process *process, t_cmd *cmd, t_token *target)
+{
+	cmd->out_file = open(target->data, O_CREAT | O_WRONLY | O_APPEND, 0644);
+	if (cmd->out_file < 0)
+	{
+		if (access(target->data, R_OK))
+			process->stat = (exec_err(ERR_PERM, target->data));
+		else
+			process->stat = (exec_err(ERR_STD, NULL));
+		return ;
+	}
+	if (dup2(cmd->out_file, STDOUT_FILENO) < 0)
+	{
+		process->stat = exec_err(ERR_STD, NULL);
+		close(cmd->out_file);
+		return ;
+	}
+	close(cmd->out_file);
+}
+
 void	output_redirection(t_process *process, t_cmd *cmd, t_token *target)
 {
-	cmd->out_file = open(target->data, O_RDWR | O_CREAT | O_TRUNC, S_IRWXU);
+	cmd->out_file = open(target->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (cmd->out_file < 0)
 	{
 		if (access(target->data, R_OK))
@@ -287,16 +390,21 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 	previous = NULL;
 	while (cmd_list)
 	{
-		if (cmd_list->flags == I_REDIRECT || cmd_list->flags == O_REDIRECT)
+		if (cmd_list->flags == I_REDIRECT || cmd_list->flags == O_REDIRECT
+			|| cmd_list->flags == HEREDOC || cmd_list->flags == APPEND)
 		{
 			temp = cmd_list;
 			cmd_list = cmd_list->next;
 			if (cmd_list)
 			{
-				if (temp->flags == O_REDIRECT)
-					output_redirection(process, cmd, cmd_list);
+				if (temp->flags == HEREDOC)
+					heredoc_redirection(process, cmd_list);
 				else if (temp->flags == I_REDIRECT)
 					input_redirection(process, cmd, cmd_list);
+				else if (temp->flags == O_REDIRECT)
+					output_redirection(process, cmd, cmd_list);
+				else if (temp->flags == APPEND)
+					append_redirection(process, cmd, cmd_list);
 				aux = cmd_list->next;
 				cmd_list->next = NULL;
 				cmd_list = aux;
@@ -375,6 +483,7 @@ int	exec_no_pipes(t_process *process)
 			exit (process->stat);
 		}
 		process->stat = wait_child_processes(&child, 1);
+		clean_here_docs(process);
 	}
 	return (process->stat);
 }

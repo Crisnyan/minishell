@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:57:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/08 13:28:30 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/13 15:16:32 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ typedef struct s_process
 	int		stat;
 	int		og_fd[2];
 	int		pipe[2];
+	int		heredoc[16];
+	int		heredoc_count;
 	t_dict	*m_env;
 	t_token	**cmd_list;
 }			t_process;
