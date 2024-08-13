@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/13 19:01:33 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/13 20:30:06 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,14 +248,14 @@ void	clean_here_docs(t_process *process)
 	while (i < 16)
 	{
 		filename = ft_itoa(i + 1);
-		filename = ft_strattach("temp/Here-doc", &filename);
+		filename = ft_strattach("temp/here-doc", &filename);
 		unlink(filename);
 		free(filename);
 		i++;
 	}
 }
 
-void	heredoc_prompt(t_process *process, char *delim)
+void	heredoc_prompt(t_process *process, char *delim, int fd)
 {
 	char	*line;
 	int		og_stdin;
@@ -277,44 +277,68 @@ void	heredoc_prompt(t_process *process, char *delim)
 			return ;
 		}
 		line = ft_strappend(&line, "\n");
-		ft_printf(process->heredoc[process->heredoc_count], line);
+		ft_printf(fd, line);
 		free(line);
 	}
 }
 
-void	heredoc_redirection(t_process *process, t_token *target)
+void	create_heredocs(t_process *process, t_token *cmd_list)
 {
-	char *filename;
 
-	if (process->heredoc_count > 15)
-		exit (exec_err(ERR_HDMAX, NULL));
-	filename = ft_itoa(process->heredoc_count + 1);
-	filename = ft_strattach("temp/Here-doc", &filename);
-	process->heredoc[process->heredoc_count] = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0644);
-	if (process->heredoc[process->heredoc_count] < 0)
+	int		fd;
+	char	*filename;
+	t_token	*temp;
+
+	fd = 0;
+	filename = NULL;
+	temp = cmd_list;
+	while (temp)
 	{
-		if (access(filename, F_OK))
-			process->stat = (exec_err(ERR_NOFILE, filename));
-		else if (access(filename, R_OK))
-			process->stat = (exec_err(ERR_PERM, filename));
-		else
-			process->stat = (exec_err(ERR_STD, NULL));
-		free(filename);
-		return ;
+		if (temp->flags == HEREDOC)
+		{
+			filename = ft_itoa(process->heredoc_count + 1);
+			filename = ft_strattach("temp/here-doc", &filename);
+			fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0644);
+			if (fd < 0)
+			{
+				if (access(filename, F_OK))
+					process->stat = (exec_err(ERR_NOFILE, filename));
+				else if (access(filename, R_OK))
+					process->stat = (exec_err(ERR_PERM, filename));
+				else
+					process->stat = (exec_err(ERR_STD, NULL));
+				free(filename);
+				return ;
+			}
+			heredoc_prompt(process, temp->next->data, fd);
+			close(fd);
+			free(filename);
+			process->heredoc_count++;
+		}
+		temp = temp->next;		
 	}
-	heredoc_prompt(process, target->data);
-	close(process->heredoc[process->heredoc_count]);
-	process->heredoc[process->heredoc_count] = open(filename, O_RDONLY);
-	if (dup2(process->heredoc[process->heredoc_count], STDIN_FILENO) < 0)
+}
+
+void	heredoc_redirection(t_process *process)
+{
+	char	*filename;
+	int		fd;
+
+	fd = 0;
+	filename = ft_itoa(process->heredoc_count + 1);
+	filename = ft_strattach("temp/here-doc", &filename);
+	process->heredoc_count++;
+	printf("HOLA HEREDOC -- %s\n", filename);
+	fd = open(filename, O_RDONLY);
+	if (dup2(fd, STDIN_FILENO) < 0)
 	{
 		process->stat = exec_err(ERR_STD, NULL);
-		close(process->heredoc[process->heredoc_count]);
+		close(fd);
 		free(filename);
 		return ;
 	}
-	close(process->heredoc[process->heredoc_count]);
+	close(fd);
 	free(filename);
-	process->heredoc_count++;
 }
 
 void	input_redirection(t_process *process, t_cmd *cmd, t_token *target)
@@ -388,6 +412,7 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 
 	redir_cmd = cmd_list;
 	previous = NULL;
+	process->heredoc_count = 0;
 	while (cmd_list)
 	{
 		if (cmd_list->flags == I_REDIRECT || cmd_list->flags == O_REDIRECT
@@ -398,7 +423,7 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 			if (cmd_list)
 			{
 				if (temp->flags == HEREDOC)
-					heredoc_redirection(process, cmd_list);
+					heredoc_redirection(process);
 				else if (temp->flags == I_REDIRECT)
 					input_redirection(process, cmd, cmd_list);
 				else if (temp->flags == O_REDIRECT)
@@ -408,11 +433,6 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 				aux = cmd_list->next;
 				cmd_list->next = NULL;
 				cmd_list = aux;
-			}
-			else
-			{
-				ft_printf(2, "minishell: syntax error near unexpected token\n");
-				break;
 			}
 			if (previous != NULL)
 				previous->next = cmd_list;
@@ -453,6 +473,7 @@ int	exec_no_pipes(t_process *process)
 	pid_t	child;
 	t_token	*cmd_tokens;
 
+	create_heredocs(process, process->cmd_list[0]);
 	if (ghetto_builtin(process->cmd_list[0]))
 	{
 		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
@@ -530,6 +551,7 @@ int	exec_pipes(t_process *process)
 			process->stat = exec_err(ERR_STD, NULL);
 			break ;
 		}
+		create_heredocs(process, process->cmd_list[i]);
 		child[i] = fork();
 		if (child[i] < 0)
 		{
@@ -562,6 +584,7 @@ int	exec_pipes(t_process *process)
 		close_pipes(process->pipe);
 	}
 	process->stat = wait_child_processes(child, process->n_pipes + 1);
+	clean_here_docs(process);
 	free(child);
 	dup2(process->og_fd[0], STDIN_FILENO);
 	dup2(process->og_fd[1], STDOUT_FILENO);
