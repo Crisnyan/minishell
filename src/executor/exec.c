@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 17:05:54 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 19:46:19 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -429,6 +429,8 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 					output_redirection(process, cmd, cmd_list);
 				else if (temp->flags == APPEND)
 					append_redirection(process, cmd, cmd_list);
+				if (process->stat)
+					return (redir_cmd);
 				aux = cmd_list->next;
 				cmd_list->next = NULL;
 				cmd_list = aux;
@@ -477,6 +479,8 @@ int	exec_no_pipes(t_process *process)
 	create_heredocs(process, process->cmd_list[0]);
 	cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
 	process->cmd_list[0] = cmd_tokens;
+	if (process->stat)
+		return (process->stat);
 	if (check_built_in(cmd_tokens, process) == 99)
 	{
 		child = fork();
@@ -540,6 +544,8 @@ int	exec_pipes(t_process *process)
 			}
 			close_pipes(process->pipe);
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
+			if (process->stat)
+				exit (process->stat);
 			process->cmd_list[i] = cmd_tokens;
 			if (check_built_in(cmd_tokens, process) != 99)
 				exit (process->stat);
@@ -559,8 +565,6 @@ int	exec_pipes(t_process *process)
 	}
 	process->stat = wait_child_processes(child, process->n_pipes + 1);
 	free(child);
-	dup2(process->og_fd[0], STDIN_FILENO);
-	dup2(process->og_fd[1], STDOUT_FILENO);
 	return (process->stat);
 }
 
@@ -570,18 +574,11 @@ int	ft_executor(t_process *process)
 		return (-1);
 	process->stat = 0;
 	if (!process->n_pipes)
-	{
 		exec_no_pipes(process);
-		dup2(process->og_fd[0], STDIN_FILENO);
-		dup2(process->og_fd[1], STDOUT_FILENO);
-		clean_here_docs(process);
-		return (process->stat);
-	}
 	else
-	{
 		exec_pipes(process);
-		clean_here_docs(process);
-		return (process->stat);
-	}
+	dup2(process->og_fd[0], STDIN_FILENO);
+	dup2(process->og_fd[1], STDOUT_FILENO);
+	clean_here_docs(process);
 	return (process->stat);
 }

@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 16:45:37 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 18:26:47 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,9 +258,8 @@ int	main(int argc, char **argv, char **envp)
 		process.n_pipes = count_pipes(tok);
 		process.cmd_list = split_cmd(tok, process.n_pipes);
 		ft_executor(&process);
-		//print_token_list(process.cmd_list[0]);
 		free_cmd_list(process.cmd_list, process.n_pipes);
-		printf("------%i\n", process.stat);
+		printf("------ %i\n", process.stat);
 		free(line);
 		free(prompt);
 	}
