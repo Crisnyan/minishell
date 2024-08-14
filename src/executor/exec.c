@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 13:39:55 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 17:05:54 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -446,26 +446,6 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 	return (redir_cmd);
 }
 
-int	ghetto_builtin(t_token *cmd_tokens)
-{
-	int	res;
-
-	res = 0;
-	while (cmd_tokens)
-	{
-		if (!ft_strcmp(cmd_tokens->data, "pwd")
-			|| !ft_strcmp(cmd_tokens->data, "cd")
-			|| !ft_strcmp(cmd_tokens->data, "env")
-			|| !ft_strcmp(cmd_tokens->data, "export")
-			|| !ft_strcmp(cmd_tokens->data, "unset"))
-		{
-			res = 1;
-		}
-		cmd_tokens = cmd_tokens->next;
-	}
-	return (res);
-}
-
 int	wait_child_processes(pid_t *childs, int amount)
 {
 	pid_t	pid;
@@ -495,15 +475,9 @@ int	exec_no_pipes(t_process *process)
 
 	ft_bzero(&cmd, sizeof(t_cmd));
 	create_heredocs(process, process->cmd_list[0]);
-	if (ghetto_builtin(process->cmd_list[0]))
-	{
-		cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
-		check_built_in(cmd_tokens, process);
-		dup2(process->og_fd[0], STDIN_FILENO);
-		dup2(process->og_fd[1], STDOUT_FILENO);
-		return (process->stat);
-	}
-	else
+	cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
+	process->cmd_list[0] = cmd_tokens;
+	if (check_built_in(cmd_tokens, process) == 99)
 	{
 		child = fork();
 		if (child < 0)
@@ -513,7 +487,6 @@ int	exec_no_pipes(t_process *process)
 		}
 		else if (child == 0)
 		{
-			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
 			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
 			{
 				free_cmd(&cmd);
@@ -525,7 +498,6 @@ int	exec_no_pipes(t_process *process)
 			exit (process->stat);
 		}
 		process->stat = wait_child_processes(&child, 1);
-		clean_here_docs(process);
 	}
 	return (process->stat);
 }
@@ -568,6 +540,7 @@ int	exec_pipes(t_process *process)
 			}
 			close_pipes(process->pipe);
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
+			process->cmd_list[i] = cmd_tokens;
 			if (check_built_in(cmd_tokens, process) != 99)
 				exit (process->stat);
 			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
@@ -585,7 +558,6 @@ int	exec_pipes(t_process *process)
 		close_pipes(process->pipe);
 	}
 	process->stat = wait_child_processes(child, process->n_pipes + 1);
-	clean_here_docs(process);
 	free(child);
 	dup2(process->og_fd[0], STDIN_FILENO);
 	dup2(process->og_fd[1], STDOUT_FILENO);
@@ -600,11 +572,15 @@ int	ft_executor(t_process *process)
 	if (!process->n_pipes)
 	{
 		exec_no_pipes(process);
+		dup2(process->og_fd[0], STDIN_FILENO);
+		dup2(process->og_fd[1], STDOUT_FILENO);
+		clean_here_docs(process);
 		return (process->stat);
 	}
 	else
 	{
 		exec_pipes(process);
+		clean_here_docs(process);
 		return (process->stat);
 	}
 	return (process->stat);

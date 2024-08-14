@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 13:52:43 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 16:45:37 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -185,7 +185,7 @@ int	parse(t_token *token, t_process *process)
 	temp = token;
 	if (temp->flags == PIPE)
 	{
-		ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+		ft_printf(STDERR_FILENO, "minishell: syntax error near unexpected token '%s'\n", temp->data);
 		process->stat = 2;
 		return (2);
 	}
@@ -194,13 +194,13 @@ int	parse(t_token *token, t_process *process)
 		if ((temp->flags == I_REDIRECT || temp->flags == O_REDIRECT || temp->flags == HEREDOC || temp->flags == O_APPEND)
 			&& (!temp->next || temp->next->flags == PIPE || temp->next->flags == I_REDIRECT || temp->next->flags == O_REDIRECT || temp->next->flags == HEREDOC || temp->next->flags == O_APPEND))
 		{
-			ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+			ft_printf(STDERR_FILENO, "minishell: syntax error near unexpected token '%s'\n", temp->data);
 			process->stat = 2;
 			return (2);
 		}
 		else if (temp->flags == PIPE && (!temp->next || temp->next->flags == PIPE))
 		{
-			ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+			ft_printf(STDERR_FILENO, "minishell: syntax error near unexpected token '%s'\n", temp->data);
 			process->stat = 2;
 			return (2);
 		}
@@ -210,7 +210,7 @@ int	parse(t_token *token, t_process *process)
 	}
 	if (heredoc_count > 15)
 	{
-		ft_printf(2, "minishell: maximum here-document count exceeded\n");
+		ft_printf(STDERR_FILENO, "minishell: maximum here-document count exceeded\n");
 		process->stat = 2;
 		exit(2);
 	}
@@ -258,6 +258,7 @@ int	main(int argc, char **argv, char **envp)
 		process.n_pipes = count_pipes(tok);
 		process.cmd_list = split_cmd(tok, process.n_pipes);
 		ft_executor(&process);
+		//print_token_list(process.cmd_list[0]);
 		free_cmd_list(process.cmd_list, process.n_pipes);
 		printf("------%i\n", process.stat);
 		free(line);
