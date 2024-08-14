@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/13 20:30:21 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 13:52:43 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,16 +183,28 @@ int	parse(t_token *token, t_process *process)
 
 	heredoc_count = 0;
 	temp = token;
+	if (temp->flags == PIPE)
+	{
+		ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+		process->stat = 2;
+		return (2);
+	}
 	while (temp)
 	{
-		if ((temp->flags == PIPE || temp->flags == I_REDIRECT || temp->flags == O_REDIRECT || temp->flags == HEREDOC || temp->flags == O_APPEND)
+		if ((temp->flags == I_REDIRECT || temp->flags == O_REDIRECT || temp->flags == HEREDOC || temp->flags == O_APPEND)
 			&& (!temp->next || temp->next->flags == PIPE || temp->next->flags == I_REDIRECT || temp->next->flags == O_REDIRECT || temp->next->flags == HEREDOC || temp->next->flags == O_APPEND))
-			{
-				ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
-				process->stat = 2;
-				return(2);
-			}
-		else if (temp->flags == HEREDOC)
+		{
+			ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+			process->stat = 2;
+			return (2);
+		}
+		else if (temp->flags == PIPE && (!temp->next || temp->next->flags == PIPE))
+		{
+			ft_printf(2, "minishell: syntax error near unexpected token '%s'\n", temp->data);
+			process->stat = 2;
+			return (2);
+		}
+		if (temp->flags == HEREDOC)
 			heredoc_count++;
 		temp = temp->next;
 	}
@@ -200,7 +212,7 @@ int	parse(t_token *token, t_process *process)
 	{
 		ft_printf(2, "minishell: maximum here-document count exceeded\n");
 		process->stat = 2;
-		return (2);
+		exit(2);
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/13 20:30:06 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 13:39:55 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -328,7 +328,6 @@ void	heredoc_redirection(t_process *process)
 	filename = ft_itoa(process->heredoc_count + 1);
 	filename = ft_strattach("temp/here-doc", &filename);
 	process->heredoc_count++;
-	printf("HOLA HEREDOC -- %s\n", filename);
 	fd = open(filename, O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
@@ -467,12 +466,34 @@ int	ghetto_builtin(t_token *cmd_tokens)
 	return (res);
 }
 
+int	wait_child_processes(pid_t *childs, int amount)
+{
+	pid_t	pid;
+	int		i;
+	int		stat_loc;
+	int		status;
+
+	i = 0;
+	status = 1;
+	while (i < amount)
+	{
+		pid = waitpid(-1, &stat_loc, 0);
+		if (pid < 0)
+			exec_err(ERR_STD, "pid:");
+		if (pid == childs[amount - 1] && WIFEXITED(stat_loc))
+			status = WEXITSTATUS(stat_loc);
+		i++;
+	}
+	return (status);
+}
+
 int	exec_no_pipes(t_process *process)
 {
 	t_cmd	cmd;
 	pid_t	child;
 	t_token	*cmd_tokens;
 
+	ft_bzero(&cmd, sizeof(t_cmd));
 	create_heredocs(process, process->cmd_list[0]);
 	if (ghetto_builtin(process->cmd_list[0]))
 	{
@@ -509,27 +530,6 @@ int	exec_no_pipes(t_process *process)
 	return (process->stat);
 }
 
-int	wait_child_processes(pid_t *childs, int amount)
-{
-	pid_t	pid;
-	int		i;
-	int		stat_loc;
-	int		status;
-
-	i = 0;
-	status = 1;
-	while (i < amount)
-	{
-		pid = waitpid(-1, &stat_loc, 0);
-		if (pid < 0)
-			exec_err(ERR_STD, "pid:");
-		if (pid == childs[amount - 1] && WIFEXITED(stat_loc))
-			status = WEXITSTATUS(stat_loc);
-		i++;
-	}
-	return (status);
-}
-
 int	exec_pipes(t_process *process)
 {
 	int		i;
@@ -538,6 +538,7 @@ int	exec_pipes(t_process *process)
 	t_token	*cmd_tokens;
 
 	i = -1;
+	ft_bzero(&cmd, sizeof(t_cmd));
 	child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
 	if (!child)
 	{
