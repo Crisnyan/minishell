@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 19:46:19 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/14 20:34:45 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -244,12 +244,13 @@ void	clean_here_docs(t_process *process)
 	char	*filename;
 
 	i = 0;
-	(void)process;
+	process->heredoc_count = 0;
 	while (i < 16)
 	{
 		filename = ft_itoa(i + 1);
 		filename = ft_strattach("temp/here-doc", &filename);
-		unlink(filename);
+		if (!access(filename, F_OK))
+			unlink(filename);
 		free(filename);
 		i++;
 	}
@@ -327,7 +328,6 @@ void	heredoc_redirection(t_process *process)
 	fd = 0;
 	filename = ft_itoa(process->heredoc_count + 1);
 	filename = ft_strattach("temp/here-doc", &filename);
-	process->heredoc_count++;
 	fd = open(filename, O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
@@ -336,6 +336,7 @@ void	heredoc_redirection(t_process *process)
 		free(filename);
 		return ;
 	}
+	process->heredoc_count++;
 	close(fd);
 	free(filename);
 }
@@ -577,8 +578,8 @@ int	ft_executor(t_process *process)
 		exec_no_pipes(process);
 	else
 		exec_pipes(process);
+	clean_here_docs(process);
 	dup2(process->og_fd[0], STDIN_FILENO);
 	dup2(process->og_fd[1], STDOUT_FILENO);
-	clean_here_docs(process);
 	return (process->stat);
 }
