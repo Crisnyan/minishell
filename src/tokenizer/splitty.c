@@ -145,17 +145,17 @@ t_token *get_token(char *line, char quote)
 
 	if (is_quote(*line))
 	{
-		//printf("entra 1\n");
+		//ft_printf(2, "entra 1\n");
 		tok = create_str_token(line, quote);
 	}
 	else if (is_special(*line) && *line != '$')
 	{
-		//printf("entra 2\n");
+		//ft_printf(2, "entra 2\n");
 		tok = create_special_token(line);
 	}
 	else 
 	{
-		//printf("entra 3\n");
+		//ft_printf(2, "entra 3\n");
 		tok = create_normal_token(line);
 	}
 	return (tok);
@@ -163,11 +163,11 @@ t_token *get_token(char *line, char quote)
 
 void	print_token(t_token *token)
 {
-	printf("self: %p\n", token);
+	//printf("self: %p\n", token);
 	printf("data: %s\n", token->data);
 	printf("flags: %d\n", token->flags);
 	printf("adv: %d\n", token->adv);
-	printf("next: %p\n", token->next);
+	//printf("next: %p\n", token->next);
 }
 
 void	print_token_list(t_token *head)

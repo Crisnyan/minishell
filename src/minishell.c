@@ -217,6 +217,36 @@ int	parse(t_token *token, t_process *process)
 	return (0);
 }
 
+int	count_quotes(char *line)
+{
+	int	i;
+	int	sq;
+	int	dq;
+
+	i = 0;
+	sq = 0;
+	dq = 0;
+	while (line[i])
+	{
+		if (line[i] == '\'' && !dq)
+		{
+			if (!sq)
+				sq = 1;
+			else
+				sq = 0;
+		}
+		else if (line[i] == '\"' && !sq)
+		{
+			if (!dq)
+				dq = 1;
+			else
+				dq = 0;
+		}
+		i++;
+	}
+	return (sq + dq);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	char		*line;
@@ -247,7 +277,16 @@ int	main(int argc, char **argv, char **envp)
 			free(prompt);
 			continue;
 		}
+		if (count_quotes(line) % 2)
+		{
+			printf("quote error\n");
+			free(line);
+			free(prompt);
+			continue;
+		}
 		tok = expansor(minishplit(line), &m_env);
+		printf("---------------------------\n");
+		print_token_list(tok);
 		if (parse(tok, &process))
 		{
 			free_list(tok);

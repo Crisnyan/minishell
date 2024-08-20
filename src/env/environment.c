@@ -19,6 +19,11 @@ char	*ft_getenv(char *key, t_dict *dict)
 
 	if (!key)
 		return (NULL);
+	if (!ft_strcmp(key, "$"))
+	{
+		res = ft_itoa((int)getpid());
+		return (res);
+	}
 	index = search_index(key, dict);
 	if (index == -1)
 		return (NULL);
