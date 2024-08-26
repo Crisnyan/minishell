@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 01:25:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/07/31 01:25:47 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/04 04:24:36 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ enum flags
 	DOLLAR_QUOTE,
 	DOLLAR_DQUOTE,
 	QUOTE,
-	DQUOTE
+	DQUOTE,
+	FOLLOW_QUOTE,
+	FOLLOW_DQUOTE
 };
 
 typedef struct s_token
@@ -39,9 +41,5 @@ int	is_space(char c);
 void	print_token(t_token *token);
 void	print_token_list(t_token *head);
 void	free_list(t_token *head);
-t_token	*create_normal_token(char *line);
-t_token	*create_str_token(char *line, char quote);
-t_token	*create_special_token(char *line);
-t_token *get_token(char *line, char quote);
 t_token *minishplit(char *line);
 #endif

@@ -6,7 +6,7 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/08/03 23:31:02 by cristian         ###   ########.fr        #
+#    Updated: 2024/08/26 17:58:54 by cristian         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ OBJ_PATH = obj
 
 READLINE_FLAGS = -L./readline -lreadline -lhistory -lncurses
 
-CFLAGS = -Wall -Wextra -Werror -fsanitize=address -fsanitize=leak
+CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -fsanitize=leak
 
 CC = cc
 

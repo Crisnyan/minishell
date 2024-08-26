@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 23:31:48 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/04 02:33:21 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/04 02:57:29 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	print_tokens(t_token *token, int newline)
 			break;
 		printf("%s", token->data);
 		token = token->next;
-		if (token)
+		if (token && token->flags != REDIRECT && token->flags != PIPE)
 			printf(" ");
 	}
 	if (newline)
@@ -32,6 +32,8 @@ static int	check_n(t_token *token)
 	int	i;
 
 	i = 0;
+	if (!token)
+		return (0);
 	if (token->data[0] == '-')
 	{
 		i++;

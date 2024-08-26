@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/03 14:02:20 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/04 06:42:29 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int	main(int argc, char **argv, char **envp)
 		prompt = format_prompt(&m_env);
 		line = readline(prompt);
 		if (!line)
-			return(exit(0), 0);
+			return((void)printf("exit\n"), exit(0), 0);
 		if (*line != '\0')
 			add_history(line);
 		tok = expansor(minishplit(line), &m_env);

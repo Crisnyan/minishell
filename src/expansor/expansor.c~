@@ -1,0 +1,285 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expansor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/07/31 01:41:46 by cristian          #+#    #+#             */
+/*   Updated: 2024/08/23 01:36:33 by cristian         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../includes/minishell.h"
+
+typedef struct s_dollar
+{
+	int			pos;
+	struct s_dollar	*next;
+}	t_dollar;
+
+static void	expand(t_token *tok, t_dict *m_env)
+{
+	char *expanded;
+	
+	expanded = ft_strtrim(tok->data, "$");
+	if (!expanded)
+		return ;
+	free(tok->data);
+	tok->data = ft_getenv(expanded, m_env);
+	free(expanded);
+}
+
+static void	rearrange(t_token *dollar, t_token *string)
+{
+	free(dollar->data);
+	dollar->data = string->data;
+	dollar->next = string->next;
+	dollar->flags = string->flags;
+	free(string);
+}
+
+static void	tokjoin(t_token *tok, int counter)
+{
+	int		i;
+	int		j;
+	int		counter2;
+	char	*joined;
+	t_token	*head;
+	t_token	*free_tok;
+
+
+	ft_printf(2, "counter: %d, tok->data: %s\n", counter, tok->data);
+	counter2 = counter + 1;
+	i = 0;
+	j = 0;
+	free_tok = tok;
+	while (counter2--)
+	{
+		j += ft_strlen(free_tok->data);
+		ft_printf(2, "STRLEN: %d\n", ft_strlen(free_tok->data));
+		free_tok = free_tok->next;
+	}
+	ft_printf(2, "TOTAL: %d\n", j);
+	joined = malloc(sizeof(char) * j + 1);
+	if (!joined)
+		return ;
+	ft_printf(2, "j: %d\n", j);
+	joined[j] = '\0';
+	j = 0;
+	head = tok;
+	while (tok->data[i])
+		joined[j++] = tok->data[i++];
+	tok = tok->next;
+	while (counter--)
+	{
+		i = 0;
+		ft_printf(2, "j: %d\n", j);
+		ft_printf(2, "tok->data: %s\n", tok->data);
+		free_tok = tok;
+		ft_printf(2, "llega 1");
+		while (tok->data[i])
+			joined[j++] = tok->data[i++];
+		ft_printf(2, "tok->data[i]: %c\n", tok->data[i]);
+		ft_printf(2, "llega 2");
+		write(2, joined, j);
+		tok = tok->next;
+		free(free_tok->data);
+		free(free_tok);
+	
+	}
+	free(head->data);
+	head->data = joined;
+	head->next = tok;
+}
+
+static	*t_dollar create_dollar_list(int pos)
+{
+	int			i;
+	t_dollar	*dollar;
+
+	i = 0;
+	dollar = (t_dollar *)malloc(sizeof(t_dollar));
+	if (!dollar)
+		return (NULL);
+	dollar->data = pos;
+	dollar->next = NULL;
+	return (dollar);
+}
+
+static int	is_expansion_dollar(char *data, int i)
+{
+	static int	was_dollar = 0;
+	static int	has_been_dollar = 0;
+
+	if (has_been_dollar && was_dollar
+	|| (data[i - 1] && data[i - 1] != '$')
+	|| i == 0)
+	{
+		was_dollar = 0;
+		has_been_dollar = 0;
+	}
+	if (was_dollar)
+	{
+		has_been_dollar = 1;
+		return (0);
+	}
+	if (data[i] == '$' && data[i + 1])
+	{
+		if (i > 0 && data[i - 1] == '$') 
+			was_dollar = 1;
+	}
+	if (!was_dollar && data[i + 1])
+		return (1);
+	return (0);
+}
+
+static int	strdlr(char *data)
+{
+	int			i;
+	t_dollar	*dollar_list;
+	t_dollar	*prev;
+	t_dollar	*head;
+
+	i = 0;
+	dollar_list = NULL;
+	prev = NULL;
+	while (data[i])
+	{
+		//haz una funcion que cuente espacios tambien
+		if (is_expansion_dollar(data, i))
+		{
+			dollar_list = create_dollar_list(i);
+			if (!head)
+				head = dollar_list;
+			prev = dollar_list;
+			dollar_list = dollar_list->next;
+			prev->next = dollar_list;
+		}
+	}
+	dollar_list = create_dollar_list(i);
+	prev->next = dollar_list;
+	return (dollar_list);
+}
+
+static void	free_list(t_dollar *list)
+{
+	t_dollar *head;
+
+	while (list)
+	{
+		head = list;
+		list = list->next;
+		free(head);
+	}
+}
+
+static t_token	*create_token(char *data, t_dict *m_env)
+{
+	static int		is_dollar_var = 0;
+	int			len;
+	t_token		*tok;
+
+	tok = (t_token *)malloc(sizeof(t_token));
+	len = ft_strlen(data);
+	if (!is_dollar_var && len)
+		tok->data = ft_getenv(data, m_env);
+	else if (is_dollar && len)
+		tok->data = data;
+	else if (
+	{
+		tok->data = ft_itoa((int)getpid());
+		is_dollar_var = !is_dollar_var;
+	}
+	if (!ft_strlen(data))
+		is_dollar_var = true;
+	tok->flags = -1;
+	tok->adv = -1;
+	tok->next = NULL;
+	free(temp);
+	return (tok);
+}
+
+static	char*	expand_join(char *data, t_dollar *list, m_env)
+{
+	int		counter;
+	char	*str;
+	t_token	*tok;
+	t_token	*head;
+	t_token	*prev;
+
+	head = NULL;
+	prev = NULL;
+	counter = 0;
+	while (list)
+	{
+		if (!list->next)
+			break;
+		if (prev)
+			prev->next = tok;
+		str = ft_substr(data, list->pos + 1, list->next->pos);
+		if (tok)
+		tok = create_token(str, m_env);
+		if (!head)
+			head = tok;
+		prev = tok;
+		tok = tok->next;
+		counter++;
+		free(str);
+	}
+	return (free(create_token("a", m_env)), free(data),
+		tokjoin(head, counter)->data);
+}
+
+static void	dollar_in_quote(t_token *tok, t_dict *m_env)
+{
+	t_token	*head;
+	t_token	*dollar_list;
+
+	head = tok;
+	dollar_list = NULL;
+	while (tok)
+	{
+		if (tok->flags == DOLLAR_QUOTE ||  tok->flags == DOLLAR_QUOTE
+		|| tok->flags == QUOTE || tok->flags == DQUOTE
+		|| tok->flags == FOLLOW_QUOTE || tok->flags == FOLLOW_DQUOTE)
+			 dollar_list = strdlr(tok->data);
+		if (dollar_list)
+		{
+			tok->data = expand_join(tok->data, dollar_list, m_env);
+			free_dollar_list(dollar_list);
+		}
+		tok = tok->next;
+	}
+}
+
+t_token *expansor(t_token *tok, t_dict *m_env)
+{
+	t_token *head;
+	t_token *temp;
+	int	counter;
+
+	head = tok;
+	while (tok)
+	{
+		temp = tok;
+		counter = 0;
+		while ((temp->next && temp->next->flags == FOLLOW_DQUOTE)
+		|| (temp->next && temp->next->flags == FOLLOW_QUOTE))
+		{
+			
+			temp = temp->next;
+			counter++;
+		}
+		if (counter)
+			tokjoin(tok, counter);
+		if (tok->flags == DOLLAR && !is_space(tok->data[1]))
+			expand(tok, m_env);
+		else if (tok->flags == DOLLAR_QUOTE 
+		|| tok->flags == DOLLAR_DQUOTE)
+			rearrange(tok, tok->next);
+		tok = tok->next;
+	}
+	dollar_in_quote(head, m_evn);
+	return (head);
+}
