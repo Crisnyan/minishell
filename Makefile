@@ -46,7 +46,7 @@ OBJ_PATH = obj
 
 READLINE_FLAGS = -L./readline -lreadline -lhistory -lncurses
 
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=address -fsanitize=leak
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address -fsanitize=leak
 
 CC = cc
 

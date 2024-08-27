@@ -29,10 +29,7 @@ void	expand_string(t_token *tok, t_dict *m_env)
 		if (tok->data[i] == '$' && tok->data[i + 1] && (tok->data[i + 1] != '\'' && tok->data[i + 1] != '\"' && tok->data[i + 1] != ' '))
 		{
 			aux = ft_substr(tok->data, j, i - j);
-			if (!res)
-				res = ft_strdup(aux);
-			else
-				res = ft_strappend(&res, aux);
+			res = ft_strappend(&res, aux);
 			free(aux);
 			j = i + 1;
 			while (tok->data[j] && tok->data[j] != '$' && tok->data[j] != '?' && tok->data[j] != ' ' && 
@@ -85,7 +82,7 @@ void	rearrange(t_token *dollar, t_token *string)
 	dollar->flags = string->flags;
 	free(string);
 }
-
+/*
 static char	*null_ignore_join(char *s1, char *s2)
 {
 	printf("entra null_ignore_join\n");
@@ -106,34 +103,31 @@ static char	*null_ignore_join(char *s1, char *s2)
 	}
 	printf("entra 4\n");
 	return (ft_strjoin(s1, s2));
-}
+}*/
 
-static void join(t_token *tok, t_token *prev)
+static void join(t_token *tok)
 {
-	char	*temp;
+	t_token	*temp;
 
-	printf("entra join\n");
-	temp = tok->data;
-	printf("prev->data:%s\n", tok->data);
-	prev->data = null_ignore_join(prev->data, tok->data);
-	printf("prev->data:%s\n", tok->data);
-	prev->next = tok->next;
-	free(temp);
-	free(tok);
+	temp = NULL;
+	while (tok && tok->next && (tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
+	{
+		temp = tok->next;
+		printf("-----JOIN: Tok: %s -- Next %s\n", tok->data, temp->data);
+		tok->data = ft_strappend(&tok->data, temp->data);
+		tok->next = temp->next;
+		free(temp->data);
+		free(temp);
+	}
 }
 
 static void tokjoin(t_token *tok)
 {
-	t_token *prev;
-
-	prev = NULL;
 	printf("entra tokjoin\n");
 	while (tok)
 	{
-		while (tok->flags == FOLLOW_QUOTE || tok->flags == FOLLOW_DQUOTE)
-			join(tok, prev);
-		if (!prev)
-			prev = tok;
+		if (tok->next && (tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
+			join(tok);
 		tok = tok->next;
 	}
 }
