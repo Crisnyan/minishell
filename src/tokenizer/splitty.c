@@ -6,29 +6,11 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/14 16:45:20 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/27 02:06:16 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-//enum flags
-//{
-//	STRING,
-//	PIPE,
-//	REDIRECT,
-//	DOLLAR
-//	QUOTE,
-//	DQUOTE
-//};
-//
-//typedef struct s_token
-//{
-//	int			flags;
-//	int			adv;
-//	char		*data;
-//	struct s_token	*next;
-//}	t_token;
 
 int	is_quote(char c)
 {
@@ -54,8 +36,27 @@ int	dollar_flags(char *line)
 		return (DOLLAR_DQUOTE);
 	return (DOLLAR);
 }
+static void quote_flags(t_token *tok, char quote, char *line, int n)
+{
+	printf("%s\n", line);
+	printf("%d\n", n);
+	if (n && !is_space(line[n - 1]) && !is_special(line[n - 1]))
+	{
+		if (quote == '\'')
+			tok->flags = FOLLOW_QUOTE;
+		else
+			tok->flags = FOLLOW_DQUOTE;
+	}
+	else
+	{
+		if (quote == '\'')
+			tok->flags = QUOTE;
+		else
+			tok->flags = DQUOTE;
+	}
+}
 
-t_token	*create_normal_token(char *line)
+static t_token	*create_normal_token(char *line)
 {
 	int			i;
 	t_token		*tok;
@@ -78,7 +79,7 @@ t_token	*create_normal_token(char *line)
 	return (tok);
 }
 
-t_token	*create_str_token(char *line, char quote)
+static t_token	*create_str_token(char *line, char quote, char *original, int n)
 {
 	int			i;
 	t_token		*tok;
@@ -93,12 +94,9 @@ t_token	*create_str_token(char *line, char quote)
 		tok->data = ft_substr(line, 1, i - 1);
 	else
 		tok->data = ft_strdup("");
-	if (quote == '\'')
-		tok->flags = QUOTE;
-	else 
-		tok->flags = DQUOTE;
+	quote_flags(tok, quote, original, n);
 	tok->next = NULL;
-	if (i == 1 || !line[i])
+	if ((i == 1  && !line[i])|| !line[i])
 		i--;
 	tok->adv = i + 1;
 	return (tok);
@@ -139,14 +137,14 @@ t_token	*create_special_token(char *line)
 	return (tok);
 }
 	
-t_token *get_token(char *line, char quote)
+static t_token *get_token(char *line, char quote, char *original, int n)
 {
 	t_token *tok;
 
 	if (is_quote(*line))
 	{
 		//ft_printf(2, "entra 1\n");
-		tok = create_str_token(line, quote);
+		tok = create_str_token(line, quote, original, n);
 	}
 	else if (is_special(*line) && *line != '$')
 	{
@@ -217,7 +215,7 @@ t_token *minishplit(char *line)
 			break;
 		if (is_quote(line[i]))
 			quote = line[i];
-		ptr = get_token(&line[i], quote);
+		ptr = get_token(&line[i], quote, line, i);
 		i += ptr->adv;
 		if (!head)
 			head = ptr;

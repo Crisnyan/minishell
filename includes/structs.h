@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:57:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/13 15:16:32 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/27 02:06:42 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,9 @@ enum flags
 	DOLLAR_QUOTE,
 	DOLLAR_DQUOTE,
 	QUOTE,
-	DQUOTE
+	DQUOTE,
+	FOLLOW_QUOTE,
+	FOLLOW_DQUOTE
 };
 
 typedef struct s_token
