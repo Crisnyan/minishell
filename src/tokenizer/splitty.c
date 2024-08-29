@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/28 01:08:41 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/27 02:06:16 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/29 18:09:39 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ int	dollar_flags(char *line)
 }
 static void quote_flags(t_token *tok, char quote, char *line, int n)
 {
-	printf("%s\n", line);
-	printf("%d\n", n);
+	//printf("%s\n", line);
+	//printf("%d\n", n);
 	if (n && !is_space(line[n - 1]) && !is_special(line[n - 1]))
 	{
 		if (quote == '\'')

@@ -6,11 +6,13 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 18:26:47 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 18:10:11 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
+
+int global_signal;
 
 char	*get_user(char *env)
 {
@@ -25,6 +27,16 @@ char	*get_user(char *env)
 	return (user);
 }
 
+void	handle_c_heredoc(int signal)
+{
+	if (signal == SIGINT)
+	{
+		close(STDIN_FILENO);
+		ft_printf(STDERR_FILENO, "\n");
+		global_signal = 130;
+	}
+}
+
 void	handle_c(int signal)
 {
 	if (signal == SIGINT)
@@ -33,9 +45,10 @@ void	handle_c(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
+		global_signal = 130;
 	}
 }
-
+/*
 void	cntl_signals(void)
 {
 	struct	sigaction cntl_c;
@@ -46,8 +59,8 @@ void	cntl_signals(void)
 	sigaction(SIGINT, &cntl_c, NULL);
 	cntl_bar.sa_handler = SIG_IGN;
 	sigemptyset(&cntl_bar.sa_mask);
-	//sigaction(SIGQUIT, &cntl_bar, NULL);
-}
+	sigaction(SIGQUIT, &cntl_bar, NULL);
+}*/
 
 char	*format_prompt(t_dict *m_env)
 {
@@ -168,7 +181,6 @@ void	print_list(t_token **list, int n)
 
 void	init_process(t_process *process, t_dict *m_env)
 {
-	process->stat = 0;
 	process->heredoc_count = 0;
 	process->m_env = m_env;
 	process->cmd_list = NULL;
@@ -186,7 +198,7 @@ int	parse(t_token *token, t_process *process)
 	if (temp->flags == PIPE)
 	{
 		ft_printf(STDERR_FILENO, "minishell: syntax error near unexpected token '%s'\n", temp->data);
-		process->stat = 2;
+		process->m_env->err_code = 2;
 		return (2);
 	}
 	while (temp)
@@ -195,13 +207,13 @@ int	parse(t_token *token, t_process *process)
 			&& (!temp->next || temp->next->flags == PIPE || temp->next->flags == I_REDIRECT || temp->next->flags == O_REDIRECT || temp->next->flags == HEREDOC || temp->next->flags == O_APPEND))
 		{
 			ft_printf(STDERR_FILENO, "minishell: syntax error near unexpected token '%s'\n", temp->data);
-			process->stat = 2;
+			process->m_env->err_code = 2;
 			return (2);
 		}
 		else if (temp->flags == PIPE && (!temp->next || temp->next->flags == PIPE))
 		{
 			ft_printf(STDERR_FILENO, "minishell: syntax error near unexpected token '%s'\n", temp->data);
-			process->stat = 2;
+			process->m_env->err_code = 2;
 			return (2);
 		}
 		if (temp->flags == HEREDOC)
@@ -211,7 +223,7 @@ int	parse(t_token *token, t_process *process)
 	if (heredoc_count > 15)
 	{
 		ft_printf(STDERR_FILENO, "minishell: maximum here-document count exceeded\n");
-		process->stat = 2;
+		process->m_env->err_code = 2;
 		exit(2);
 	}
 	return (0);
@@ -257,18 +269,23 @@ int	main(int argc, char **argv, char **envp)
 
 	prompt = NULL;
 	line = NULL;
+	global_signal = 0;
 	if (argc != 1 && argv[0][2] == 'm' && envp)
 		return (0);
-	cntl_signals();
+	//cntl_signals();
 	if (init_env(envp, &m_env))
 		return (1);
 	init_process(&process, &m_env);
 	while (1)
 	{
+		signal(SIGINT, handle_c);
+		signal(SIGQUIT, SIG_IGN);
 		prompt = format_prompt(&m_env);
 		line = readline(prompt);
+		if (global_signal)
+			process.m_env->err_code = global_signal;
 		if (!line)
-			return(exit(0), 0);
+			exit(process.m_env->err_code);
 		if (*line != '\0')
 			add_history(line);
 		if (*line == '\0')
@@ -285,8 +302,6 @@ int	main(int argc, char **argv, char **envp)
 			continue;
 		}
 		tok = expansor(minishplit(line), &m_env);
-		printf("---------------------------\n");
-		print_token_list(tok);
 		if (parse(tok, &process))
 		{
 			free_list(tok);
@@ -298,8 +313,11 @@ int	main(int argc, char **argv, char **envp)
 		process.cmd_list = split_cmd(tok, process.n_pipes);
 		ft_executor(&process);
 		free_cmd_list(process.cmd_list, process.n_pipes);
-		printf("------ %i\n", process.stat);
+		//printf("------ %i\n", process.m_env->err_code);
+		//printf("GLOBAL: %i\n", global_signal);
+		global_signal = 0;
 		free(line);
 		free(prompt);
 	}
+	return (process.m_env->err_code);
 }

@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/06 16:59:27 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 16:42:34 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,9 @@
 #define ANSI_COLOR_MAGENTA_B	"\x1b[35;1m"
 #define ANSI_COLOR_CYAN_B		"\x1b[36;1m"
 #define ANSI_COLOR_RESET		"\x1b[0m"
+
+extern int	global_signal;
+
+void	handle_c_heredoc(int signal);
 
 #endif

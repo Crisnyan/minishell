@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 01:41:46 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/27 04:18:31 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/29 18:08:58 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,14 +60,14 @@ void	expand_string(t_token *tok, t_dict *m_env)
 		tok->data = ft_strdup(res);
 		free(res);
 	}
-	printf("EXPANSOR RESULT: %s\n", tok->data);
+	//printf("EXPANSOR RESULT: %s\n", tok->data);
 }
 
 void	expand(t_token *tok, t_dict *m_env)
 {
 	char *expanded;
 	
-	printf("entra?\n");
+	//printf("entra?\n");
 	expanded = ft_strtrim(tok->data, "$");
 	free(tok->data);
 	tok->data = ft_getenv(expanded, m_env);
@@ -113,7 +113,7 @@ static void join(t_token *tok)
 	while (tok && tok->next && (tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
 	{
 		temp = tok->next;
-		printf("-----JOIN: Tok: %s -- Next %s\n", tok->data, temp->data);
+		//printf("-----JOIN: Tok: %s -- Next %s\n", tok->data, temp->data);
 		tok->data = ft_strappend(&tok->data, temp->data);
 		tok->next = temp->next;
 		free(temp->data);
@@ -123,7 +123,7 @@ static void join(t_token *tok)
 
 static void tokjoin(t_token *tok)
 {
-	printf("entra tokjoin\n");
+	//printf("entra tokjoin\n");
 	while (tok)
 	{
 		if (tok->next && (tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
@@ -137,9 +137,9 @@ t_token *expansor(t_token *tok, t_dict *m_env)
 	t_token *head;
 
 	head = tok;
-	printf("INTO EXPANSOR\n");
-	printf("++++++++++++++++++++++\n");
-	print_token_list(head);
+	//printf("INTO EXPANSOR\n");
+	//printf("++++++++++++++++++++++\n");
+	//print_token_list(head);
 	head = tok;
 	while (tok)
 	{
@@ -152,5 +152,5 @@ t_token *expansor(t_token *tok, t_dict *m_env)
 			rearrange(tok, tok->next);
 		tok = tok->next;
 	}
-	return (print_token_list(head), tokjoin(head), print_token_list(head), head);
+	return (tokjoin(head), head);
 }

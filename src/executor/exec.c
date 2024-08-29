@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/14 20:34:45 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 18:38:43 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,21 +293,23 @@ void	create_heredocs(t_process *process, t_token *cmd_list)
 	fd = 0;
 	filename = NULL;
 	temp = cmd_list;
+	signal(SIGINT, handle_c_heredoc);
+	signal(SIGQUIT, SIG_IGN);
 	while (temp)
 	{
 		if (temp->flags == HEREDOC)
 		{
 			filename = ft_itoa(process->heredoc_count + 1);
-			filename = ft_strattach("temp/here-doc", &filename);
+			filename = ft_strattach("/tmp/temp/here-doc", &filename);
 			fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0644);
 			if (fd < 0)
 			{
 				if (access(filename, F_OK))
-					process->stat = (exec_err(ERR_NOFILE, filename));
+					process->m_env->err_code = (exec_err(ERR_NOFILE, filename));
 				else if (access(filename, R_OK))
-					process->stat = (exec_err(ERR_PERM, filename));
+					process->m_env->err_code = (exec_err(ERR_PERM, filename));
 				else
-					process->stat = (exec_err(ERR_STD, NULL));
+					process->m_env->err_code = (exec_err(ERR_STD, NULL));
 				free(filename);
 				return ;
 			}
@@ -331,7 +333,7 @@ void	heredoc_redirection(t_process *process)
 	fd = open(filename, O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
-		process->stat = exec_err(ERR_STD, NULL);
+		process->m_env->err_code = exec_err(ERR_STD, NULL);
 		close(fd);
 		free(filename);
 		return ;
@@ -347,16 +349,16 @@ void	input_redirection(t_process *process, t_cmd *cmd, t_token *target)
 	if (cmd->in_file < 0)
 	{
 		if (access(target->data, F_OK))
-			process->stat = (exec_err(ERR_NOFILE, target->data));
+			process->m_env->err_code = (exec_err(ERR_NOFILE, target->data));
 		else if (access(target->data, R_OK))
-			process->stat = (exec_err(ERR_PERM, target->data));
+			process->m_env->err_code = (exec_err(ERR_PERM, target->data));
 		else
-			process->stat = (exec_err(ERR_STD, NULL));
+			process->m_env->err_code = (exec_err(ERR_STD, NULL));
 		return ;
 	}
 	if (dup2(cmd->in_file, STDIN_FILENO) < 0)
 	{
-		process->stat = exec_err(ERR_STD, NULL);
+		process->m_env->err_code = exec_err(ERR_STD, NULL);
 		close(cmd->in_file);
 		return ;
 	}
@@ -369,14 +371,14 @@ void	append_redirection(t_process *process, t_cmd *cmd, t_token *target)
 	if (cmd->out_file < 0)
 	{
 		if (access(target->data, R_OK))
-			process->stat = (exec_err(ERR_PERM, target->data));
+			process->m_env->err_code = (exec_err(ERR_PERM, target->data));
 		else
-			process->stat = (exec_err(ERR_STD, NULL));
+			process->m_env->err_code = (exec_err(ERR_STD, NULL));
 		return ;
 	}
 	if (dup2(cmd->out_file, STDOUT_FILENO) < 0)
 	{
-		process->stat = exec_err(ERR_STD, NULL);
+		process->m_env->err_code = exec_err(ERR_STD, NULL);
 		close(cmd->out_file);
 		return ;
 	}
@@ -389,14 +391,14 @@ void	output_redirection(t_process *process, t_cmd *cmd, t_token *target)
 	if (cmd->out_file < 0)
 	{
 		if (access(target->data, R_OK))
-			process->stat = (exec_err(ERR_PERM, target->data));
+			process->m_env->err_code = (exec_err(ERR_PERM, target->data));
 		else
-			process->stat = (exec_err(ERR_STD, NULL));
+			process->m_env->err_code = (exec_err(ERR_STD, NULL));
 		return ;
 	}
 	if (dup2(cmd->out_file, STDOUT_FILENO) < 0)
 	{
-		process->stat = exec_err(ERR_STD, NULL);
+		process->m_env->err_code = exec_err(ERR_STD, NULL);
 		close(cmd->out_file);
 		return ;
 	}
@@ -430,7 +432,7 @@ t_token	*ft_redirect(t_process *process, t_cmd *cmd, t_token *cmd_list)
 					output_redirection(process, cmd, cmd_list);
 				else if (temp->flags == APPEND)
 					append_redirection(process, cmd, cmd_list);
-				if (process->stat)
+				if (process->m_env->err_code)
 					return (redir_cmd);
 				aux = cmd_list->next;
 				cmd_list->next = NULL;
@@ -465,6 +467,19 @@ int	wait_child_processes(pid_t *childs, int amount)
 			exec_err(ERR_STD, "pid:");
 		if (pid == childs[amount - 1] && WIFEXITED(stat_loc))
 			status = WEXITSTATUS(stat_loc);
+		else if (pid == childs[amount - 1] && WIFSIGNALED(stat_loc))
+		{
+			status = WTERMSIG(stat_loc);
+			if (status == SIGINT)
+			{
+				status = 130;
+			}
+			else if (status == SIGQUIT)
+			{
+				status = 131;
+				ft_printf(STDOUT_FILENO, "Quit (core dumped)\n");
+			}
+		}
 		i++;
 	}
 	return (status);
@@ -480,31 +495,33 @@ int	exec_no_pipes(t_process *process)
 	create_heredocs(process, process->cmd_list[0]);
 	cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
 	process->cmd_list[0] = cmd_tokens;
-	if (process->stat)
-		return (process->stat);
+	if (process->m_env->err_code)
+		return (process->m_env->err_code);
 	if (check_built_in(cmd_tokens, process) == 99)
 	{
 		child = fork();
 		if (child < 0)
 		{
-			process->stat = exec_err(ERR_MEM, " fork:");
-			return (process->stat);
+			process->m_env->err_code = exec_err(ERR_MEM, " fork:");
+			return (process->m_env->err_code);
 		}
 		else if (child == 0)
 		{
-			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
+			signal(SIGQUIT, SIG_DFL);
+			signal(SIGINT, SIG_DFL);
+			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->m_env->err_code))
 			{
 				free_cmd(&cmd);
-				exit (process->stat);
+				exit (process->m_env->err_code);
 			}
 			execve(cmd.path, cmd.args, cmd.envp);
 			free_cmd(&cmd);
-			process->stat = exec_err(ERR_STD, NULL);
-			exit (process->stat);
+			process->m_env->err_code = exec_err(ERR_STD, NULL);
+			exit (process->m_env->err_code);
 		}
-		process->stat = wait_child_processes(&child, 1);
+		process->m_env->err_code = wait_child_processes(&child, 1);
 	}
-	return (process->stat);
+	return (process->m_env->err_code);
 }
 
 int	exec_pipes(t_process *process)
@@ -519,25 +536,27 @@ int	exec_pipes(t_process *process)
 	child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
 	if (!child)
 	{
-		process->stat = exec_err(ERR_MEM, " malloc:");
-		return (process->stat);
+		process->m_env->err_code = exec_err(ERR_MEM, " malloc:");
+		return (process->m_env->err_code);
 	}
 	while (++i < (process->n_pipes + 1))
 	{
 		if (pipe(process->pipe))
 		{
-			process->stat = exec_err(ERR_STD, NULL);
+			process->m_env->err_code = exec_err(ERR_STD, NULL);
 			break ;
 		}
 		create_heredocs(process, process->cmd_list[i]);
 		child[i] = fork();
 		if (child[i] < 0)
 		{
-			process->stat = exec_err(ERR_MEM, " fork:");
+			process->m_env->err_code = exec_err(ERR_MEM, " fork:");
 			break ;
 		}
 		else if (child[i] == 0)
 		{
+			signal(SIGQUIT, SIG_DFL);
+			signal(SIGINT, SIG_DFL);
 			if (i != process->n_pipes)
 			{
 				if (dup2(process->pipe[1], STDOUT_FILENO) < 0)
@@ -545,35 +564,35 @@ int	exec_pipes(t_process *process)
 			}
 			close_pipes(process->pipe);
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
-			if (process->stat)
-				exit (process->stat);
+			if (process->m_env->err_code)
+				exit (process->m_env->err_code);
 			process->cmd_list[i] = cmd_tokens;
 			if (check_built_in(cmd_tokens, process) != 99)
-				exit (process->stat);
-			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->stat))
+				exit (process->m_env->err_code);
+			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->m_env->err_code))
 			{
 				free_cmd(&cmd);
-				exit (process->stat);
+				exit (process->m_env->err_code);
 			}
 			execve(cmd.path, cmd.args, cmd.envp);
 			free_cmd(&cmd);
-			process->stat = exec_err(ERR_STD, NULL);
-			exit (process->stat);
+			process->m_env->err_code = exec_err(ERR_STD, NULL);
+			exit (process->m_env->err_code);
 		}
 		if (dup2(process->pipe[0], STDIN_FILENO) < 0)
 			exit(exec_err(ERR_STD, NULL));
 		close_pipes(process->pipe);
 	}
-	process->stat = wait_child_processes(child, process->n_pipes + 1);
+	process->m_env->err_code = wait_child_processes(child, process->n_pipes + 1);
 	free(child);
-	return (process->stat);
+	return (process->m_env->err_code);
 }
 
 int	ft_executor(t_process *process)
 {
 	if (!process->cmd_list)
 		return (-1);
-	process->stat = 0;
+	process->m_env->err_code = 0;
 	if (!process->n_pipes)
 		exec_no_pipes(process);
 	else
@@ -581,5 +600,5 @@ int	ft_executor(t_process *process)
 	clean_here_docs(process);
 	dup2(process->og_fd[0], STDIN_FILENO);
 	dup2(process->og_fd[1], STDOUT_FILENO);
-	return (process->stat);
+	return (process->m_env->err_code);
 }

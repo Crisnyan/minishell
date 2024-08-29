@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:57:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/27 02:06:42 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/29 17:16:30 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_dict
 	t_entry	*entries;
 	int		current;
 	int		cap;
+	int		err_code;
 }			t_dict;
 
 typedef struct s_cmd
@@ -66,7 +67,6 @@ typedef struct s_cmd
 typedef struct s_process
 {
 	int		n_pipes;
-	int		stat;
 	int		og_fd[2];
 	int		pipe[2];
 	int		heredoc[16];
