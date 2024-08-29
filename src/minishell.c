@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 19:19:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 18:10:11 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 19:23:39 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,7 +296,8 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (count_quotes(line) % 2)
 		{
-			printf("quote error\n");
+			ft_printf(STDERR_FILENO, "minishell: syntax error involving quotes\n");
+			process.m_env->err_code = 2;
 			free(line);
 			free(prompt);
 			continue;

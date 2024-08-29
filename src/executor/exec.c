@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 18:38:43 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 19:24:23 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,7 +248,7 @@ void	clean_here_docs(t_process *process)
 	while (i < 16)
 	{
 		filename = ft_itoa(i + 1);
-		filename = ft_strattach("temp/here-doc", &filename);
+		filename = ft_strattach("/tmp/here-doc", &filename);
 		if (!access(filename, F_OK))
 			unlink(filename);
 		free(filename);
@@ -300,7 +300,7 @@ void	create_heredocs(t_process *process, t_token *cmd_list)
 		if (temp->flags == HEREDOC)
 		{
 			filename = ft_itoa(process->heredoc_count + 1);
-			filename = ft_strattach("/tmp/temp/here-doc", &filename);
+			filename = ft_strattach("/tmp/here-doc", &filename);
 			fd = open(filename, O_CREAT | O_RDWR | O_TRUNC, 0644);
 			if (fd < 0)
 			{
@@ -329,7 +329,7 @@ void	heredoc_redirection(t_process *process)
 
 	fd = 0;
 	filename = ft_itoa(process->heredoc_count + 1);
-	filename = ft_strattach("temp/here-doc", &filename);
+	filename = ft_strattach("/tmp/here-doc", &filename);
 	fd = open(filename, O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{
