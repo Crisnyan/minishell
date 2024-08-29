@@ -26,6 +26,13 @@ void	expand_string(t_token *tok, t_dict *m_env)
 	res = NULL;
 	while (tok->data[i])
 	{
+		if (tok->data[i] == '\'')
+		{
+			i++;
+			while (tok->data[i] != '\'')
+				i++;
+			i++;
+		}
 		if (tok->data[i] == '$' && tok->data[i + 1] && (tok->data[i + 1] != '\'' && tok->data[i + 1] != '\"' && tok->data[i + 1] != ' '))
 		{
 			aux = ft_substr(tok->data, j, i - j);
@@ -145,7 +152,7 @@ t_token *expansor(t_token *tok, t_dict *m_env)
 	{
 		if (tok->flags == DOLLAR && !is_space(tok->data[1]))
 			expand(tok, m_env);
-		else if (tok->flags >= DOLLAR_QUOTE && tok->flags <= FOLLOW_DQUOTE)
+		else if (tok->flags >= DQUOTE && tok->flags <= FOLLOW_DQUOTE)
 			expand_string(tok, m_env);
 		else if (tok->flags == DOLLAR_QUOTE 
 		|| tok->flags == DOLLAR_DQUOTE)

@@ -194,6 +194,8 @@ int	parse(t_token *token, t_process *process)
 	t_token *temp;
 
 	heredoc_count = 0;
+	if (!token)
+		return (1);
 	temp = token;
 	if (temp->flags == PIPE)
 	{
