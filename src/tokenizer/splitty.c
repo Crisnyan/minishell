@@ -26,6 +26,10 @@ int	is_space(char c)
 	return ((c >= '\a' && c <= '\r') || c == ' ');
 }
 
+int	is_special_no_dolar(char c) {
+	return (c == '<' || c == '>' || c == '|');
+}
+/*
 int	dollar_flags(char *line)
 {
 	if (line[0] != '$')
@@ -35,12 +39,10 @@ int	dollar_flags(char *line)
 	else if (line[0] == '$' && line[1] == '\"')
 		return (DOLLAR_DQUOTE);
 	return (DOLLAR);
-}
+}*/
 static void quote_flags(t_token *tok, char quote, char *line, int n)
 {
-	//printf("%s\n", line);
-	//printf("%d\n", n);
-	if (n && !is_space(line[n - 1]) && !is_special(line[n - 1]))
+	if (n && !is_space(line[n - 1]) && !is_special_no_dolar(line[n - 1]))
 	{
 		if (quote == '\'')
 			tok->flags = FOLLOW_QUOTE;
@@ -56,7 +58,7 @@ static void quote_flags(t_token *tok, char quote, char *line, int n)
 	}
 }
 
-static t_token	*create_normal_token(char *line)
+static t_token	*create_normal_token(char *line, char *original, int n)
 {
 	int			i;
 	t_token		*tok;
@@ -65,15 +67,11 @@ static t_token	*create_normal_token(char *line)
 	tok = (t_token *)malloc(sizeof(t_token));
 	if (!tok)
 		return (NULL);
-	if (line[0] == '$')
-		i++;
 	while (!is_space(line[i]) && line[i] 
-	&& !is_special(line[i]) && !is_quote(line[i]))
-		i++;
-	if (line[0] == '$' && line[1] == '$')
+	&& !is_special_no_dolar(line[i]) && !is_quote(line[i]))
 		i++;
 	tok->data = ft_substr(line, 0, i);
-	tok->flags = dollar_flags(line);
+	quote_flags(tok, '\"', original, n);
 	tok->next = NULL;
 	tok->adv = i;
 	return (tok);
@@ -154,7 +152,7 @@ static t_token *get_token(char *line, char quote, char *original, int n)
 	else 
 	{
 		//ft_printf(2, "entra 3\n");
-		tok = create_normal_token(line);
+		tok = create_normal_token(line, original, n);
 	}
 	return (tok);
 }
@@ -225,6 +223,8 @@ t_token *minishplit(char *line)
 		ptr = ptr->next;
 		quote = '\0';
 	}
+	printf("END SPLITTT\n-----------------------------\n");
+	print_token_list(head);
 	return (head);
 }
 //
