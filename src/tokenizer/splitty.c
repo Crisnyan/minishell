@@ -46,6 +46,8 @@ static void quote_flags(t_token *tok, char quote, char *line, int n)
 	{
 		if (quote == '\'')
 			tok->flags = FOLLOW_QUOTE;
+		else if (quote == 's')
+			tok->flags = FOLLOW_STRING;
 		else
 			tok->flags = FOLLOW_DQUOTE;
 	}
@@ -53,6 +55,8 @@ static void quote_flags(t_token *tok, char quote, char *line, int n)
 	{
 		if (quote == '\'')
 			tok->flags = QUOTE;
+		else if (quote == 's')
+			tok->flags = STRING;
 		else
 			tok->flags = DQUOTE;
 	}
@@ -71,7 +75,7 @@ static t_token	*create_normal_token(char *line, char *original, int n)
 	&& !is_special_no_dolar(line[i]) && !is_quote(line[i]))
 		i++;
 	tok->data = ft_substr(line, 0, i);
-	quote_flags(tok, '\"', original, n);
+	quote_flags(tok, 's', original, n);
 	tok->next = NULL;
 	tok->adv = i;
 	return (tok);
@@ -223,8 +227,6 @@ t_token *minishplit(char *line)
 		ptr = ptr->next;
 		quote = '\0';
 	}
-	printf("END SPLITTT\n-----------------------------\n");
-	print_token_list(head);
 	return (head);
 }
 //

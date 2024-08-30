@@ -338,6 +338,7 @@ void	heredoc_redirection(t_process *process)
 		free(filename);
 		return ;
 	}
+	ft_printf(2, "END HERE REDIR\n");
 	process->heredoc_count++;
 	close(fd);
 	free(filename);
@@ -565,14 +566,14 @@ int	exec_pipes(t_process *process)
 			close_pipes(process->pipe);
 			cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[i]);
 			if (process->m_env->err_code)
-				exit (process->m_env->err_code);
+				exit(process->m_env->err_code);
 			process->cmd_list[i] = cmd_tokens;
 			if (check_built_in(cmd_tokens, process) != 99)
-				exit (process->m_env->err_code);
+				exit(process->m_env->err_code);
 			if (format_cmd(&cmd, process->m_env, cmd_tokens, &process->m_env->err_code))
 			{
 				free_cmd(&cmd);
-				exit (process->m_env->err_code);
+				exit(process->m_env->err_code);
 			}
 			execve(cmd.path, cmd.args, cmd.envp);
 			free_cmd(&cmd);
