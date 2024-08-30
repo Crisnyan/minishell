@@ -338,7 +338,6 @@ void	heredoc_redirection(t_process *process)
 		free(filename);
 		return ;
 	}
-	ft_printf(2, "END HERE REDIR\n");
 	process->heredoc_count++;
 	close(fd);
 	free(filename);
