@@ -236,9 +236,9 @@ int	main(int argc, char **argv, char **envp)
 	prompt = NULL;
 	line = NULL;
 	global_signal = 0;
-	if (argc != 1 && argv[0][2] == 'm' && envp)
+	(void)argv;
+	if (argc != 1 && envp)
 		return (0);
-	//cntl_signals();
 	if (init_env(envp, &m_env))
 		return (1);
 	init_process(&process, &m_env);
@@ -251,7 +251,11 @@ int	main(int argc, char **argv, char **envp)
 		if (global_signal)
 			process.m_env->err_code = global_signal;
 		if (!line)
+		{
+			if (isatty(STDIN_FILENO))
+				ft_printf(STDERR_FILENO, "exit\n");
 			exit(process.m_env->err_code);
+		}
 		if (*line != '\0')
 			add_history(line);
 		if (*line == '\0')
@@ -286,5 +290,6 @@ int	main(int argc, char **argv, char **envp)
 		free(line);
 		free(prompt);
 	}
+	free_entries(m_env.entries, m_env.current);
 	return (process.m_env->err_code);
 }

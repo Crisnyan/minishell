@@ -29,7 +29,12 @@ int	ft_cd(char *path, t_dict *m_env)
 	}
 	if (chdir(path))
 	{
-		ft_printf(2, CD_ERROR_DIR, path);
+		if (access(path, F_OK))
+			ft_printf(2, CD_ERROR_DIR, path);
+		else if (access(path, X_OK))
+			ft_printf(2, CD_ERROR_PERM, path);
+		else
+			perror("cd");
 		return (1);
 	}
 	return (0);

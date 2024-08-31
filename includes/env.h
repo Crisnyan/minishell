@@ -22,6 +22,7 @@
 #define CD_ERROR_DIR			"minishell: cd: no such file or directory: %s\n"
 #define CD_ERROR_ARGS			"minishell: cd: too many arguments\n"
 #define CD_ERROR_SET			"minishell: cd: %s not set\n"
+#define CD_ERROR_PERM			"minishell: cd: %s: Permission denied\n"
 #define ENV_ERROR				"env: \'%s\': No such file or directory\n"
 
 
