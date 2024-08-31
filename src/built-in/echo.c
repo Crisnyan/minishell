@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 23:31:48 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/04 02:33:21 by cristian         ###   ########.fr       */
+/*   Updated: 2024/08/31 18:09:21 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ static int	check_n(t_token *token)
 	int	i;
 
 	i = 0;
+	if (!token)
+		return (0);
 	if (token->data[0] == '-')
 	{
 		i++;
@@ -53,7 +55,10 @@ int	ft_echo(t_token *token)
 
 	newline = 1;
 	if (!token->next)
+	{
+		printf("\n");
 		return (0);
+	}
 	token = token->next;
 	while (check_n(token))
 	{
