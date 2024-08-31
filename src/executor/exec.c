@@ -320,6 +320,8 @@ void	create_heredocs(t_process *process, t_token *cmd_list)
 		}
 		temp = temp->next;		
 	}
+	if (global_signal)
+		process->m_env->err_code = global_signal;
 }
 
 void	heredoc_redirection(t_process *process)
@@ -547,6 +549,11 @@ int	exec_pipes(t_process *process)
 			break ;
 		}
 		create_heredocs(process, process->cmd_list[i]);
+		if (process->m_env->err_code)
+		{
+			free(child);
+			return (process->m_env->err_code);
+		}
 		child[i] = fork();
 		if (child[i] < 0)
 		{
@@ -593,6 +600,7 @@ int	ft_executor(t_process *process)
 	if (!process->cmd_list)
 		return (-1);
 	process->m_env->err_code = 0;
+	global_signal = 0;
 	if (!process->n_pipes)
 		exec_no_pipes(process);
 	else

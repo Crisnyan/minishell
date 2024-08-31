@@ -145,17 +145,14 @@ static t_token *get_token(char *line, char quote, char *original, int n)
 
 	if (is_quote(*line))
 	{
-		//ft_printf(2, "entra 1\n");
 		tok = create_str_token(line, quote, original, n);
 	}
 	else if (is_special(*line) && *line != '$')
 	{
-		//ft_printf(2, "entra 2\n");
 		tok = create_special_token(line);
 	}
 	else 
 	{
-		//ft_printf(2, "entra 3\n");
 		tok = create_normal_token(line, original, n);
 	}
 	return (tok);
@@ -229,17 +226,3 @@ t_token *minishplit(char *line)
 	}
 	return (head);
 }
-//
-//int	main(void)
-//{
-//	char	*str;
-//	t_token	*head;
-//
-//	str = "hola que tal hermano";
-//	head = minishplit(str);
-//	while (head != NULL)
-//	{
-//		print_token(head);
-//		head = head->next;
-//	}
-//}

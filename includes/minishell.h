@@ -39,6 +39,7 @@
 
 extern int	global_signal;
 
+void	handle_c(int signal);
 void	handle_c_heredoc(int signal);
 
 #endif

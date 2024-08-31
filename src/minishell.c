@@ -48,19 +48,6 @@ void	handle_c(int signal)
 		global_signal = 130;
 	}
 }
-/*
-void	cntl_signals(void)
-{
-	struct	sigaction cntl_c;
-	struct	sigaction cntl_bar;
-
-	cntl_c.sa_handler = &handle_c;
-	sigemptyset(&cntl_c.sa_mask);
-	sigaction(SIGINT, &cntl_c, NULL);
-	cntl_bar.sa_handler = SIG_IGN;
-	sigemptyset(&cntl_bar.sa_mask);
-	sigaction(SIGQUIT, &cntl_bar, NULL);
-}*/
 
 char	*format_prompt(t_dict *m_env)
 {
@@ -90,16 +77,6 @@ void	free_split(char **tokens)
 	while (tokens[i])
 		free(tokens[i++]);
 	free(tokens);
-}
-
-void	token_loop(char **tokens)
-{
-	int		i;
-
-	i = 0;
-	while (tokens[i])
-		printf("%s\n", tokens[i++]);
-	free_split(tokens);
 }
 
 int	count_pipes(t_token *list)
@@ -164,19 +141,6 @@ t_token	**split_cmd(t_token *tokens, int pipes)
 		i++;
 	}
 	return (cmd_list);
-}
-
-void	print_list(t_token **list, int n)
-{
-	int	i;
-
-	i = 0;
-	while (i < n + 1)
-	{
-		if (list && list[i])
-			print_token_list(list[i]);
-		i++;
-	}
 }
 
 void	init_process(t_process *process, t_dict *m_env)
@@ -300,6 +264,7 @@ int	main(int argc, char **argv, char **envp)
 		{
 			ft_printf(STDERR_FILENO, "minishell: syntax error involving quotes\n");
 			process.m_env->err_code = 2;
+			global_signal = 0;
 			free(line);
 			free(prompt);
 			continue;
@@ -307,6 +272,7 @@ int	main(int argc, char **argv, char **envp)
 		tok = expansor(minishplit(line), &m_env);
 		if (parse(tok, &process))
 		{
+			global_signal = 0;
 			free_list(tok);
 			free(line);
 			free(prompt);
@@ -316,8 +282,6 @@ int	main(int argc, char **argv, char **envp)
 		process.cmd_list = split_cmd(tok, process.n_pipes);
 		ft_executor(&process);
 		free_cmd_list(process.cmd_list, process.n_pipes);
-		//printf("------ %i\n", process.m_env->err_code);
-		//printf("GLOBAL: %i\n", global_signal);
 		global_signal = 0;
 		free(line);
 		free(prompt);

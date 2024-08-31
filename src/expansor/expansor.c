@@ -70,14 +70,12 @@ void	expand_string(t_token *tok, t_dict *m_env)
 		tok->data = ft_strdup(res);
 		free(res);
 	}
-	printf("EXPANSOR RESULT: %s\n", tok->data);
 }
 
 void	expand(t_token *tok, t_dict *m_env)
 {
 	char *expanded;
-	
-	//printf("entra?\n");
+
 	expanded = ft_strtrim(tok->data, "$");
 	free(tok->data);
 	tok->data = ft_getenv(expanded, m_env);
@@ -92,38 +90,16 @@ void	rearrange(t_token *dollar, t_token *string)
 	dollar->flags = string->flags;
 	free(string);
 }
-/*
-static char	*null_ignore_join(char *s1, char *s2)
-{
-	printf("entra null_ignore_join\n");
-	if (s1 == NULL && s2 == NULL)
-	{
-		printf("entra 1\n");
-		return (NULL);
-	}
-	if (s1 == NULL)
-	{
-		printf("entra 2\n");
-		return (s2);
-	}
-	if (s2 == NULL)
-	{
-		printf("entra 3\n");
-		return (s1);
-	}
-	printf("entra 4\n");
-	return (ft_strjoin(s1, s2));
-}*/
 
 static void join(t_token *tok)
 {
 	t_token	*temp;
 
 	temp = NULL;
-	while (tok && tok->next && (tok->next->flags == FOLLOW_STRING || tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
+	while (tok && tok->next && (tok->next->flags == FOLLOW_STRING ||
+		tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
 	{
 		temp = tok->next;
-		//printf("-----JOIN: Tok: %s -- Next %s\n", tok->data, temp->data);
 		tok->data = ft_strappend(&tok->data, temp->data);
 		tok->next = temp->next;
 		free(temp->data);
@@ -133,11 +109,13 @@ static void join(t_token *tok)
 
 static void tokjoin(t_token *tok)
 {
-	//printf("entra tokjoin\n");
 	while (tok)
 	{
-		if (tok->next && (tok->next->flags == FOLLOW_QUOTE || tok->next->flags == FOLLOW_DQUOTE))
+		if (tok->next && (tok->next->flags == FOLLOW_QUOTE ||
+			tok->next->flags == FOLLOW_DQUOTE))
+		{
 			join(tok);
+		}
 		tok = tok->next;
 	}
 }
@@ -146,8 +124,6 @@ t_token *expansor(t_token *tok, t_dict *m_env)
 {
 	t_token *head;
 
-	head = tok;
-	//print_token_list(head);
 	head = tok;
 	while (tok)
 	{
