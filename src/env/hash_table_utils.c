@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:52:40 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 20:01:58 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 17:16:06 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,12 +94,14 @@ char	**split_env(char *line)
 	char	**res;
 
 	i = 0;
+	if (!line)
+		return (NULL);
 	res = (char **)malloc(sizeof(char *) * 2);
-	if (!res || !line)
+	if (!res)
 		return (NULL);
 	while (line[i] && line[i] != '=')
 		i++;
-	if (i == strlen(line))
+	if (i == ft_strlen(line))
 	{
 		res[0] = ft_strdup(line);
 		res[1] = NULL;
@@ -107,7 +109,7 @@ char	**split_env(char *line)
 	else
 	{
 		res[0] = ft_substr(line, 0, i);
-		res[1] = ft_substr(line, (i + 1), strlen(line) - i);
+		res[1] = ft_substr(line, (i + 1), ft_strlen(line) - i);
 	}
 	return (res);
 }

@@ -6,7 +6,7 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/08/03 23:31:02 by cristian         ###   ########.fr        #
+#    Updated: 2024/08/29 19:05:51 by vperez-f         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,8 @@ CFILES = minishell.c 					\
 		 built-in/exit.c				\
 		 built-in/echo.c				\
 		 tokenizer/splitty.c			\
-		 expansor/expansor.c
+		 expansor/expansor.c			\
+		 executor/exec.c
 
 OFILES = $(CFILES:%.c=%.o)
 

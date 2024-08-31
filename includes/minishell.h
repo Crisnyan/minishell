@@ -6,7 +6,11 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2024/08/03 18:55:33 by cristian         ###   ########.fr       */
+=======
+/*   Updated: 2024/08/29 16:42:34 by vperez-f         ###   ########.fr       */
+>>>>>>> test-expansor
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +27,12 @@
 # include	"../libft/libft.h"
 # include	"../printf/ft_printf.h"
 
-# include	"splitty.h"
-# include	"expansor.h"
+# include 	"structs.h"
+
 # include 	"env.h"
+# include	"splitty.h"
+# include	"executor.h"
+# include	"expansor.h"
 
 #define ANSI_COLOR_RED_B		"\x1b[31;1m"
 #define ANSI_COLOR_GREEN_B		"\x1b[32;1m"
@@ -34,5 +41,10 @@
 #define ANSI_COLOR_MAGENTA_B	"\x1b[35;1m"
 #define ANSI_COLOR_CYAN_B		"\x1b[36;1m"
 #define ANSI_COLOR_RESET		"\x1b[0m"
+
+extern int	global_signal;
+
+void	handle_c(int signal);
+void	handle_c_heredoc(int signal);
 
 #endif

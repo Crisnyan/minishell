@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 17:37:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 20:07:43 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 17:18:52 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,16 @@ char	*ft_getenv(char *key, t_dict *dict)
 
 	if (!key)
 		return (NULL);
+	if (!ft_strcmp(key, "$"))
+	{
+		res = ft_itoa((int)getpid());
+		return (res);
+	}
+	if (!ft_strcmp(key, "?"))
+	{
+		res = ft_itoa((int)dict->err_code);
+		return (res);
+	}
 	index = search_index(key, dict);
 	if (index == -1)
 		return (NULL);
@@ -39,10 +49,10 @@ char	**fetch_env(t_dict *dict)
 	res = (char **)calloc(dict->current + 1, sizeof(char *));
 	if (!res)
 		return (NULL);
-	while(i < dict->current)
+	while(i < dict->current && j < dict->cap)
 	{
-		if (dict->entries[j].key && dict->entries[j].value && !dict->entries->is_export)
-		{
+		if (dict->entries[j].key && !dict->entries[j].is_export)
+		{		
 			res[i] = ft_strdup(dict->entries[j].key);
 			res[i] = ft_strappend(&res[i], "=");
 			res[i] = ft_strappend(&res[i], dict->entries[j].value);
@@ -62,6 +72,7 @@ int	init_env(char **envp, t_dict *dict)
 	i = 0;
 	dict->cap = 4;
 	dict->current = 0;
+	dict->err_code = 0;
 	dict->entries = (t_entry *)calloc(dict->cap, sizeof(t_entry));
 	if (!dict->entries)
 		return (-1);

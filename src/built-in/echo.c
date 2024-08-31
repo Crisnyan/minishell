@@ -16,7 +16,8 @@ static void	print_tokens(t_token *token, int newline)
 {
 	while (token)
 	{
-		if (token->flags == REDIRECT || token->flags == PIPE)
+		if (token->flags == I_REDIRECT || token->flags == O_REDIRECT ||
+			token->flags == HEREDOC || token->flags == APPEND || token->flags == PIPE)
 			break;
 		printf("%s", token->data);
 		token = token->next;
@@ -46,13 +47,13 @@ static int	check_n(t_token *token)
 	return (0);
 }
 
-void	ft_echo(t_token *token)
+int	ft_echo(t_token *token)
 {
 	int	newline;
 
 	newline = 1;
 	if (!token->next)
-		return;
+		return (0);
 	token = token->next;
 	while (check_n(token))
 	{
@@ -60,4 +61,5 @@ void	ft_echo(t_token *token)
 		token = token->next;
 	}
 	print_tokens(token, newline);
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 17:10:18 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/02 17:59:37 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/08/29 17:16:02 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ void	print_env(t_dict *dict)
 	j = 0;
 	if (!dict->current)
 		return ;
-	while(i < dict->current)
+	while(i < dict->current && j < dict->cap)
 	{
 		if (dict->entries[j].key)
 		{

@@ -21,8 +21,12 @@ char	*ft_strappend(char **s1, char const *s2)
 
 	i = 0;
 	j = 0;
-	if (!s1 || !*s1 || !s2)
+	if (!s1)
 		return(NULL);
+	if (!s2)
+		return (*s1);
+	if (!*s1)
+		return (ft_strdup(s2));
 	maxlen = ft_strlen(*s1) + ft_strlen(s2);
 	str = (char *)malloc(maxlen + 1);
 	if (str == 0)
