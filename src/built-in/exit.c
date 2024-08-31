@@ -26,7 +26,8 @@ int	ft_exit(t_token *token)
 
 	i = 0;
 	neg = 0;
-	printf("exit\n");
+	if (isatty(STDIN_FILENO))
+		ft_printf(STDOUT_FILENO, "exit\n");
 	if (!token->next)
 		return (exit(0), 0);
 	token = token->next;
