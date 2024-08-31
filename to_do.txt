@@ -1,8 +1,4 @@
 //////////|-- TO FIX --|\\\\\\\\\\
-
-- Tokenizer "" --> lo parsea como dos tokens vacios en vez de uno
-- Check espacios + enter (da segfault)
-- Decidir como tokenizamos "" o "         " etc... (para cmdos, export etc...)
 - Mirar los dup2 de los og si close o no close...
 
 
