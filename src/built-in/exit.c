@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 04:59:22 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/03 20:28:36 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/01 18:46:38 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,12 @@
 
 int	print_exit(char *data)
 {
-	ft_printf(2, "minishell: exit: %s: numeric argument required\n",
-	data);
+	if (data == NULL)
+		ft_printf(2, "minishell: exit: : numeric argument required\n");
+	else
+	{
+		ft_printf(2, "minishell: exit: %s: numeric argument required\n", data);
+	}
 	return (exit(2), 2);
 }
 		
@@ -33,6 +37,8 @@ int	ft_exit(t_token *token)
 	token = token->next;
 	if (token->data == NULL)
 		return (exit(0), 0);
+	if (token->data[0] == '\0')
+		return (print_exit(token->data), 0);
 	if (token->data[i] == '-' && (i++ || 1))
 		neg = 1;
 	while (ft_isdigit(token->data[i]) && i - neg < 20)
