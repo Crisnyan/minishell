@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:48:07 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 17:16:05 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 21:04:09 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int	ft_unset(char *line, t_dict *dict)
 	env_index = search_index(line, dict);
 	if (env_index == -1)
 		return (0);
+	dict->entries[env_index].is_tombstone = 1;
 	free_entry(&dict->entries[env_index]);
 	dict->current--;
 	return (0);

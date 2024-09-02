@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:50:39 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 17:16:07 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 21:04:08 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ t_entry create_entry(char *key, char *value, int export)
 	else
 		entry.value = NULL;
 	entry.is_export = export;
+	entry.is_tombstone = 0;
 	return (entry);
 }
 
@@ -88,11 +89,8 @@ void	add_word(char *key, char *value, t_dict *dict, int export)
 	hash_index = hash(key) % dict->cap;
 	if ((dict->current) > 0)
 	{
-		if ((dict->entries[hash_index].key) && ft_strcmp((dict->entries[hash_index].key), key))
-		{
-			while ((dict->entries[hash_index].key) && ft_strcmp((dict->entries[hash_index].key), key))
-				hash_index = (hash_index + 1) % dict->cap;
-		}
+		while (dict->entries[hash_index].is_tombstone || (dict->entries[hash_index].key && ft_strcmp((dict->entries[hash_index].key), key)))
+			hash_index = (hash_index + 1) % dict->cap;
 		if (!(dict->entries[hash_index].key))
 		{
 			dict->entries[hash_index] = create_entry(key, value, export);

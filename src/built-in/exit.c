@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 04:59:22 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/01 18:46:38 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/02 21:11:25 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	print_exit(char *data)
 	}
 	return (exit(2), 2);
 }
-		
+
 int	ft_exit(t_token *token)
 {
 	int	i;

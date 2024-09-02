@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:57:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 17:16:30 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 20:31:06 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_entry
 	char	*key;
     char    *value;
 	int		is_export;
+	int		is_tombstone;
 }			t_entry;
 
 typedef struct s_dict

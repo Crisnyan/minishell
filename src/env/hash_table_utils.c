@@ -6,28 +6,26 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:52:40 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 17:16:06 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 21:04:07 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	search_index(char *key, t_dict *dict)
+int	search_index(char *key, t_dict *d)
 {
-	int	hash_index;
+	int	indx;
 
 	if (!key || *key == '\0')
 		return (-1);
-	hash_index = hash(key) % dict->cap;
-	if (0 < dict->current)
+	indx = hash(key) % d->cap;
+	if (0 < d->current)
 	{
-		if ((dict->entries[hash_index].key) && ft_strcmp((dict->entries[hash_index].key), key))
-		{
-			while ((dict->entries[hash_index].key) && ft_strcmp((dict->entries[hash_index].key), key))
-				hash_index = (hash_index + 1) % dict->cap;
-		}
-		if (dict->entries[hash_index].key)
-			return (hash_index);
+		while (d->entries[indx].is_tombstone
+			|| (d->entries[indx].key && ft_strcmp(d->entries[indx].key, key)))
+			indx = (indx + 1) % d->cap;
+		if (d->entries[indx].key && !ft_strcmp((d->entries[indx].key), key))
+			return (indx);
 		else
 			return (-1);
 	}

@@ -3,22 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 23:31:48 by cristian          #+#    #+#             */
-/*   Updated: 2024/08/31 18:09:21 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/02 21:10:25 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
+static int	echo_check_flags(t_token *tok)
+{
+	if (tok->flags == I_REDIRECT || tok->flags == O_REDIRECT
+		|| tok->flags == HEREDOC || tok->flags == APPEND || tok->flags == PIPE)
+	{
+		return (1);
+	}
+	else
+		return (0);
+}
+
 static void	print_tokens(t_token *token, int newline)
 {
 	while (token)
 	{
-		if (token->flags == I_REDIRECT || token->flags == O_REDIRECT ||
-			token->flags == HEREDOC || token->flags == APPEND || token->flags == PIPE)
-			break;
+		if (echo_check_flags(token))
+			break ;
 		printf("%s", token->data);
 		token = token->next;
 		if (token)
@@ -29,7 +39,7 @@ static void	print_tokens(t_token *token, int newline)
 }
 
 static int	check_n(t_token *token)
-{	
+{
 	int	i;
 
 	i = 0;

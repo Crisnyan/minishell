@@ -6,13 +6,13 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:42:12 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 17:16:04 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 21:12:56 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	print_pwd()
+int	print_pwd(void)
 {
 	char	*pwd;
 
