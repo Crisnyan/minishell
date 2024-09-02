@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:41:03 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/02 16:55:25 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 17:56:36 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 
 int	ft_cd(char *path, t_dict *m_env)
 {
-	char	*env_test;
+	char	*old_pwd;
 
+	old_pwd = getcwd(NULL, 0);
 	if (!path)
 	{
 		path = ft_getenv("HOME", m_env);
@@ -29,16 +30,14 @@ int	ft_cd(char *path, t_dict *m_env)
 				ft_printf(2, CD_ERROR_PERM, path);
 			else
 				perror("cd");
+			free(old_pwd);
 			free(path);
 			return (1);
 		}
-		env_test = ft_getenv("PWD", m_env);
-		if (env_test)
-		{
-			free(env_test);
-			add_word("PWD", path, m_env, 0);
-			free(path);
-		}
+		add_word("PWD", path, m_env, 0);
+		add_word("OLDPWD", old_pwd, m_env, 0);
+		free(path);
+		free(old_pwd);
 		return (0);
 	}
 	if (chdir(path))
@@ -49,15 +48,13 @@ int	ft_cd(char *path, t_dict *m_env)
 			ft_printf(2, CD_ERROR_PERM, path);
 		else
 			perror("cd");
+		free(old_pwd);
 		return (1);
 	}
-	env_test = ft_getenv("PWD", m_env);
-	if (env_test)
-	{
-		free(env_test);
-		path = getcwd(NULL, 0);
-		add_word("PWD", path, m_env, 0);
-		free(path);
-	}
+	path = getcwd(NULL, 0);
+	add_word("PWD", path, m_env, 0);
+	add_word("OLDPWD", old_pwd, m_env, 0);
+	free(path);
+	free(old_pwd);
 	return (0);
 }
