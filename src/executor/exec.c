@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 19:24:23 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/02 15:34:21 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -295,7 +295,7 @@ void	create_heredocs(t_process *process, t_token *cmd_list)
 	temp = cmd_list;
 	signal(SIGINT, handle_c_heredoc);
 	signal(SIGQUIT, SIG_IGN);
-	while (temp)
+	while (temp && !global_signal)
 	{
 		if (temp->flags == HEREDOC)
 		{
