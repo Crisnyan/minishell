@@ -6,7 +6,7 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/09/01 19:08:35 by cristian         ###   ########.fr        #
+#    Updated: 2024/09/03 00:32:42 by cristian         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,10 @@ CFILES = minishell.c 					\
 		 built-in/checker.c				\
 		 built-in/exit.c				\
 		 built-in/echo.c				\
-		 tokenizer/splitty.c			\
+		 tokenizer/is_funcs.c			\
+		 tokenizer/tokens.c				\
+		 tokenizer/create_tokens.c		\
+		 tokenizer/minishplit.c			\
 		 expansor/expansor.c			\
 		 executor/exec.c
 
