@@ -6,7 +6,7 @@
 #    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/09/03 00:32:42 by cristian         ###   ########.fr        #
+#    Updated: 2024/09/03 02:08:18 by cristian         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,14 +28,15 @@ CFILES = minishell.c 					\
 		 tokenizer/tokens.c				\
 		 tokenizer/create_tokens.c		\
 		 tokenizer/minishplit.c			\
-		 expansor/expansor.c			\
+		 expansor/expand_string.c		\
+		 expansor/tokjoin.c				\
 		 executor/exec.c
 
 OFILES = $(CFILES:%.c=%.o)
 
 OBJ = $(addprefix $(OBJ_DIR),$(OFILES))
 
-HEADERS = includes/minishell.h includes/splitty.h includes/expansor.h 
+HEADERS = includes/minishell.h
 
 DIR_LIBFT = libft/ 
 
