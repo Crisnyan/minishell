@@ -6,11 +6,37 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/30 17:37:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/08/29 17:18:52 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/03 15:33:43 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+char	**split_env(char *line)
+{
+	size_t	i;
+	char	**res;
+
+	i = 0;
+	if (!line)
+		return (NULL);
+	res = (char **)malloc(sizeof(char *) * 2);
+	if (!res)
+		return (NULL);
+	while (line[i] && line[i] != '=')
+		i++;
+	if (i == ft_strlen(line))
+	{
+		res[0] = ft_strdup(line);
+		res[1] = NULL;
+	}
+	else
+	{
+		res[0] = ft_substr(line, 0, i);
+		res[1] = ft_substr(line, (i + 1), ft_strlen(line) - i);
+	}
+	return (res);
+}
 
 char	*ft_getenv(char *key, t_dict *dict)
 {
@@ -49,10 +75,10 @@ char	**fetch_env(t_dict *dict)
 	res = (char **)calloc(dict->current + 1, sizeof(char *));
 	if (!res)
 		return (NULL);
-	while(i < dict->current && j < dict->cap)
+	while (i < dict->current && j < dict->cap)
 	{
 		if (dict->entries[j].key && !dict->entries[j].is_export)
-		{		
+		{
 			res[i] = ft_strdup(dict->entries[j].key);
 			res[i] = ft_strappend(&res[i], "=");
 			res[i] = ft_strappend(&res[i], dict->entries[j].value);

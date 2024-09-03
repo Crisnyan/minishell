@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   create_tokens.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 00:06:49 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/03 00:26:25 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/03 18:13:03 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ t_token	*create_special_token(char *line)
 	}
 	else if (line[0] == '<' || line[0] == '>')
 	{
-		i_or_o_flags(line);
+		tok->flags = i_or_o_flags(line);
 		tok->data = ft_substr(line, 0, 1);
 	}
 	return (tok);

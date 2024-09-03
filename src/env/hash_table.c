@@ -6,30 +6,13 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:50:39 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/02 21:04:08 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/03 15:42:53 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-unsigned int	hash(char *word)
-{
-	unsigned int	res;
-	int				i;
-	char			c;
-
-	res = 0;
-	i = 0;
-	while (word[i])
-	{
-		c = word[i];
-		res += res * 13 + c;
-		i++;
-	}
-	return res;
-}
-
-t_entry create_entry(char *key, char *value, int export)
+t_entry	create_entry(char *key, char *value, int export)
 {
 	t_entry	entry;
 
@@ -50,8 +33,11 @@ void	re_addword(t_entry *temp, t_entry *old, int cap)
 	hash_index = hash(old->key) % cap;
 	if ((temp[hash_index].key) && ft_strcmp((temp[hash_index].key), old->key))
 	{
-		while ((temp[hash_index].key) && ft_strcmp((temp[hash_index].key), old->key))
+		while ((temp[hash_index].key)
+			&& ft_strcmp((temp[hash_index].key), old->key))
+		{
 			hash_index = (hash_index + 1) % cap;
+		}
 	}
 	if (!(temp[hash_index].key))
 	{
@@ -68,7 +54,7 @@ void	expand_dict(t_dict *dict)
 	i = 0;
 	j = 0;
 	dict->cap = dict->cap * 2;
-	temp =  (t_entry *)calloc(dict->cap, sizeof(t_entry));
+	temp = (t_entry *)calloc(dict->cap, sizeof(t_entry));
 	while (i < dict->current)
 	{
 		if (dict->entries[j].key)
@@ -82,6 +68,14 @@ void	expand_dict(t_dict *dict)
 	dict->entries = temp;
 }
 
+int	check_availabilty(t_entry entry, char *key)
+{
+	if (entry.is_tombstone || (entry.key && ft_strcmp((entry.key), key)))
+		return (1);
+	else
+		return (0);
+}
+
 void	add_word(char *key, char *value, t_dict *dict, int export)
 {
 	int	hash_index;
@@ -89,7 +83,7 @@ void	add_word(char *key, char *value, t_dict *dict, int export)
 	hash_index = hash(key) % dict->cap;
 	if ((dict->current) > 0)
 	{
-		while (dict->entries[hash_index].is_tombstone || (dict->entries[hash_index].key && ft_strcmp((dict->entries[hash_index].key), key)))
+		while (check_availabilty(dict->entries[hash_index], key))
 			hash_index = (hash_index + 1) % dict->cap;
 		if (!(dict->entries[hash_index].key))
 		{

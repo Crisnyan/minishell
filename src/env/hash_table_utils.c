@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 16:52:40 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/02 21:04:07 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/03 15:33:14 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,28 +86,19 @@ void	free_env(char **env)
 	free(env);
 }
 
-char	**split_env(char *line)
+unsigned int	hash(char *word)
 {
-	size_t	i;
-	char	**res;
+	unsigned int	res;
+	int				i;
+	char			c;
 
+	res = 0;
 	i = 0;
-	if (!line)
-		return (NULL);
-	res = (char **)malloc(sizeof(char *) * 2);
-	if (!res)
-		return (NULL);
-	while (line[i] && line[i] != '=')
+	while (word[i])
+	{
+		c = word[i];
+		res += res * 13 + c;
 		i++;
-	if (i == ft_strlen(line))
-	{
-		res[0] = ft_strdup(line);
-		res[1] = NULL;
-	}
-	else
-	{
-		res[0] = ft_substr(line, 0, i);
-		res[1] = ft_substr(line, (i + 1), ft_strlen(line) - i);
 	}
 	return (res);
 }
