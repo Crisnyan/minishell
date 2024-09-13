@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+         #
+#    By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/09/03 02:08:18 by cristian         ###   ########.fr        #
+#    Updated: 2024/09/13 21:18:26 by vpf              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ CFILES = minishell.c 					\
 		 built-in/cd.c 					\
 		 built-in/env.c 				\
 		 built-in/export.c 				\
+		 built-in/export_utils.c 		\
 		 built-in/checker.c				\
 		 built-in/exit.c				\
 		 built-in/echo.c				\
@@ -30,6 +31,14 @@ CFILES = minishell.c 					\
 		 tokenizer/minishplit.c			\
 		 expansor/expand_string.c		\
 		 expansor/tokjoin.c				\
+		 executor/childs_management.c	\
+		 executor/cmd_utils.c			\
+		 executor/error_management.c	\
+		 executor/exec_utils.c			\
+		 executor/heredoc_utils.c		\
+		 executor/memory_management.c	\
+		 executor/redirections_utils.c	\
+		 executor/redirections.c		\
 		 executor/exec.c
 
 OFILES = $(CFILES:%.c=%.o)

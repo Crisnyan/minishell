@@ -44,6 +44,7 @@ char			**split_env(char *line);
 void			print_env(t_dict *dict);
 void			print_export(t_dict *dict);
 void			add_word(char *key, char *value, t_dict *dict, int export);
+void	        append_word(char *key, char *value, t_dict *d, int export);
 
 void			expand_dict(t_dict *dict);
 void			free_env(char **env);
