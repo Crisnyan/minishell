@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 15:22:51 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 20:23:34 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@
 # include "executor.h"
 # include "expansor.h"
 
-# define PROMPT		0
-# define LINE		1
+# define PROMPT					0
+# define LINE					1
 # define ANSI_COLOR_RED_B		"\x1b[31;1m"
 # define ANSI_COLOR_GREEN_B		"\x1b[32;1m"
 # define ANSI_COLOR_YELLOW_B	"\x1b[33;1m"
@@ -39,6 +39,9 @@
 # define ANSI_COLOR_MAGENTA_B	"\x1b[35;1m"
 # define ANSI_COLOR_CYAN_B		"\x1b[36;1m"
 # define ANSI_COLOR_RESET		"\x1b[0m"
+
+# define ERR_QUOTES		"minishell: syntax error involving quotes\n"
+# define ERR_SYNTAX		"minishell: syntax error near unexpected token '%s'\n"
 
 extern int	g_global_signal;
 

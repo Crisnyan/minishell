@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 12:49:22 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 19:12:11 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 20:34:56 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,51 +14,50 @@
 
 extern int	g_global_signal;
 
+int	check_conditions(t_process *process, t_token *temp)
+{
+	if ((is_redir(temp->flags)) && (!temp->next
+		|| temp->next->flags == PIPE || is_redir(temp->next->flags)))
+	{
+		ft_printf(STDERR_FILENO, ERR_SYNTAX, temp->data);
+		process->m_env->err_code = 2;
+		return (2);
+	}
+	else if (temp->flags == PIPE && (!temp->next
+		|| temp->next->flags == PIPE))
+	{
+		ft_printf(STDERR_FILENO, ERR_SYNTAX, temp->data);
+		process->m_env->err_code = 2;
+		return (2);
+	}
+	else
+		return (0);
+}
+
 int	parse(t_token *token, t_process *process)
 {
-	int		heredoc_count;
 	t_token	*temp;
 
-	heredoc_count = 0;
 	if (!token)
 		return (1);
 	temp = token;
 	if (temp->flags == PIPE)
 	{
-		ft_printf(STDERR_FILENO,
-			"minishell: syntax error near unexpected token '%s'\n", temp->data);
+		ft_printf(STDERR_FILENO, ERR_SYNTAX, temp->data);
 		process->m_env->err_code = 2;
 		return (2);
 	}
 	while (temp)
 	{
-		if ((is_redir(temp->flags)) && (!temp->next
-			|| temp->next->flags == PIPE || is_redir(temp->next->flags)))
-		{
-			ft_printf(STDERR_FILENO,
-				"minishell: syntax error near unexpected token '%s'\n",
-				temp->data);
-			process->m_env->err_code = 2;
+		if (check_conditions(process, temp))
 			return (2);
-		}
-		else if (temp->flags == PIPE && (!temp->next
-				|| temp->next->flags == PIPE))
-		{
-			ft_printf(STDERR_FILENO,
-				"minishell: syntax error near unexpected token '%s'\n",
-				temp->data);
-			process->m_env->err_code = 2;
-			return (2);
-		}
 		if (temp->flags == HEREDOC)
-			heredoc_count++;
+			process->current_heredoc++;
 		temp = temp->next;
 	}
-	if (heredoc_count > 15)
+	if (process->current_heredoc > 15)
 	{
-		ft_printf(STDERR_FILENO,
-			"minishell: maximum here-document count exceeded\n");
-		process->m_env->err_code = 2;
+		ft_printf(STDERR_FILENO, ERR_HDMAX_MSG);
 		exit(2);
 	}
 	return (0);

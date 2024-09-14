@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 12:43:05 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 18:10:42 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 20:31:53 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,7 @@ int	g_global_signal;
 
 void	quote_error(char **str, t_process *process)
 {
-	ft_printf(STDERR_FILENO,
-		"minishell: syntax error involving quotes\n");
+	ft_printf(STDERR_FILENO, ERR_QUOTES);
 	process->m_env->err_code = 2;
 	g_global_signal = 0;
 	free(str[LINE]);
