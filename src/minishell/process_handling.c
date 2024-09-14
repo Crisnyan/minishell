@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   process_handling.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 12:38:53 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 14:00:25 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 18:10:42 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ void	free_cmd_list(t_token **cmd_list, int n)
 	}
 }
 
-static void	replace_token(t_token *tokens)
+static void	replace_token(t_token **tokens)
 {
 	t_token	*temp;
 
-	temp = tokens->next;
-	tokens->next = NULL;
-	tokens = temp->next;
+	temp = (*tokens)->next;
+	(*tokens)->next = NULL;
+	(*tokens) = temp->next;
 	temp->next = NULL;
 	free_list(temp);
 }
@@ -74,7 +74,7 @@ t_token	**split_cmd(t_token *tokens, int pipes)
 		{
 			if (tokens->next && tokens->next->flags == PIPE)
 			{
-				replace_token(tokens);
+				replace_token(&tokens);
 				break ;
 			}
 			tokens = tokens->next;
@@ -87,6 +87,7 @@ t_token	**split_cmd(t_token *tokens, int pipes)
 void	init_process(t_process *process, t_dict *m_env)
 {
 	process->heredoc_count = 0;
+	process->current_heredoc = 0;
 	process->m_env = m_env;
 	process->cmd_list = NULL;
 	process->og_fd[0] = dup(0);

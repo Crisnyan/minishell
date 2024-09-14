@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/24 17:53:28 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 14:25:02 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 15:22:51 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ void		free_split(char **tokens);
 void		free_cmd_list(t_token **cmd_list, int n);
 void		sig_and_line(char **str, t_dict m_env);
 void		init_process(t_process *process, t_dict *m_env);
-void		quote_error(char **str, t_process process);
-void		process_pipes(char **str, t_token *tok, t_process process);
+void		quote_error(char **str, t_process *process);
+void		process_pipes(char **str, t_token *tok, t_process *process);
 char		*get_user(char *env);
 char		*format_prompt(t_dict *m_env);
 int			parse_error(char **str, t_token *tok);

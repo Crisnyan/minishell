@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 12:49:22 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 14:20:10 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 19:12:11 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,8 @@ int	parse(t_token *token, t_process *process)
 	}
 	while (temp)
 	{
-		if ((temp->flags == I_REDIRECT || temp->flags == O_REDIRECT
-				|| temp->flags == HEREDOC || temp->flags == O_APPEND)
-			&& (!temp->next || temp->next->flags == PIPE
-				|| temp->next->flags == I_REDIRECT
-				|| temp->next->flags == O_REDIRECT
-				|| temp->next->flags == HEREDOC
-				|| temp->next->flags == O_APPEND))
+		if ((is_redir(temp->flags)) && (!temp->next
+			|| temp->next->flags == PIPE || is_redir(temp->next->flags)))
 		{
 			ft_printf(STDERR_FILENO,
 				"minishell: syntax error near unexpected token '%s'\n",

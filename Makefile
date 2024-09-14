@@ -6,7 +6,7 @@
 #    By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/09/14 13:58:25 by cristian         ###   ########.fr        #
+#    Updated: 2024/09/14 15:12:04 by vpf              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -66,7 +66,7 @@ READLINE_FLAGS = -L./readline -lreadline -lhistory -lncurses
 
 CFLAGS = -Wall -Wextra -Werror -fsanitize=address -fsanitize=leak
 
-CC = gcc
+CC = cc
 
 RM = rm -f
 

@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 13:43:12 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 19:26:22 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ int	exec_no_pipes(t_process *process)
 	t_token	*cmd_tokens;
 
 	ft_bzero(&cmd, sizeof(t_cmd));
-	create_heredocs(process, process->cmd_list[0]);
+	create_heredocs(process, process->cmd_list);
 	cmd_tokens = ft_redirect(process, &cmd, process->cmd_list[0]);
 	process->cmd_list[0] = cmd_tokens;
 	if (process->m_env->err_code)
@@ -47,6 +47,12 @@ int	exec_pipes(t_process *prcs)
 
 	i = -1;
 	init_exec_pipes(&cmd, &child, prcs);
+	create_heredocs(prcs, prcs->cmd_list);
+	if (prcs->m_env->err_code)
+	{
+		free(child);
+		return (1);
+	}
 	while (++i < (prcs->n_pipes + 1))
 	{
 		if (pipe_and_heredocs(prcs, child, i))

@@ -6,11 +6,34 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 20:59:13 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/14 13:43:41 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 20:04:17 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+void	count_prev_heredocs(t_process *process, int n)
+{
+	int		i;
+	t_token	*temp;
+
+	i = 0;
+	process->heredoc_count = 0;
+	if (!n)
+		return ;
+	while (i < n)
+	{
+		temp = process->cmd_list[i];
+		while (temp && !g_global_signal)
+		{
+			if (temp->flags == HEREDOC)
+				process->heredoc_count++;
+			temp = temp->next;
+		}
+		i++;
+	}
+	return ;
+}
 
 void	heredoc_prompt(t_process *process, char *delim, int fd)
 {
@@ -26,11 +49,12 @@ void	heredoc_prompt(t_process *process, char *delim, int fd)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line)
-			return ;
-		if (!ft_strcmp(line, delim))
+		if (!line || !ft_strcmp(line, delim))
 		{
-			free(line);
+			if (!line && g_global_signal != 130)
+				ft_printf(STDERR_FILENO, CTRLD_HD, delim);
+			else if (line && !ft_strcmp(line, delim))
+				free(line);
 			return ;
 		}
 		line = ft_strappend(&line, "\n");
@@ -67,22 +91,29 @@ int	open_heredoc(t_process *process, t_token *temp)
 	return (0);
 }
 
-void	create_heredocs(t_process *process, t_token *cmd_list)
+void	create_heredocs(t_process *process, t_token **cmd_list)
 {
+	int		i;
 	t_token	*temp;
 
-	temp = cmd_list;
+	i = 0;
 	signal(SIGINT, handle_c_heredoc);
 	signal(SIGQUIT, SIG_IGN);
-	while (temp && !g_global_signal)
+	while (i < (process->n_pipes + 1))
 	{
-		if (temp->flags == HEREDOC)
+		temp = cmd_list[i];
+		while (temp && !g_global_signal)
 		{
-			if (open_heredoc(process, temp))
-				return ;
+			if (temp->flags == HEREDOC)
+			{
+				if (open_heredoc(process, temp))
+					return ;
+			}
+			temp = temp->next;
 		}
-		temp = temp->next;
+		i++;
 	}
 	if (g_global_signal)
 		process->m_env->err_code = g_global_signal;
+	process->heredoc_count = 0;
 }

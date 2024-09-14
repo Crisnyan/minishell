@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 15:17:15 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 13:04:38 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 19:42:00 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,9 @@
 # define ERR_HDMAX			9
 # define ERR_HDMAX_MSG		"minishell: maximum here-document count exceeded\n"
 
+# define CTRLD_AUX			"minishell: warning: here-document delimited"
+# define CTRLD_HD			CTRLD_AUX" by end-of-file (wanted `%s')\n"
+							
 int		ft_executor(t_process *process);
 
 int		check_status(int status);
@@ -67,7 +70,8 @@ void	free_cmd(t_cmd *cmd);
 void	free_arr(char **arr);
 void	close_pipes(int *pipefd);
 void	clean_here_docs(t_process *process);
-void	create_heredocs(t_process *process, t_token *cmd_list);
+void	count_prev_heredocs(t_process *process, int i);
+void	create_heredocs(t_process *process, t_token **cmd_list);
 
 int		is_redir(int flag);
 void	check_previous(t_token **redir_list, t_token **cmd_list);

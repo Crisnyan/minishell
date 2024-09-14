@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 21:10:25 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/13 21:18:22 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 19:42:13 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,19 +71,19 @@ void	child_exec_pipes(t_process *process, t_cmd *cmd, int i)
 
 int	pipe_and_heredocs(t_process *process, pid_t *child, int i)
 {
-	pipe(process->pipe);
-	create_heredocs(process, process->cmd_list[i]);
-	if (process->m_env->err_code)
+	if (pipe(process->pipe))
 	{
 		free(child);
+		process->m_env->err_code = exec_err(ERR_STD, NULL);
 		return (1);
 	}
+	count_prev_heredocs(process, i);
 	return (0);
 }
 
 int	init_exec_pipes(t_cmd *cmd, pid_t **child, t_process *process)
 {
-	ft_bzero(&cmd, sizeof(t_cmd));
+	ft_bzero(cmd, sizeof(t_cmd));
 	*child = (pid_t *)malloc((process->n_pipes + 1) * sizeof(pid_t));
 	if (!child)
 	{
