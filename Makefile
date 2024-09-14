@@ -6,13 +6,16 @@
 #    By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/09/13 21:18:26 by vpf              ###   ########.fr        #
+#    Updated: 2024/09/14 13:58:25 by cristian         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 
-CFILES = minishell.c 					\
+CFILES = minishell/process_handling.c	\
+		 minishell/user_and_signals.c	\
+		 minishell/parsing.c			\
+		 minishell/minishell.c			\
 		 env/environment.c 				\
 		 env/hash_table.c 				\
 		 env/hash_table_utils.c 		\
@@ -63,7 +66,7 @@ READLINE_FLAGS = -L./readline -lreadline -lhistory -lncurses
 
 CFLAGS = -Wall -Wextra -Werror -fsanitize=address -fsanitize=leak
 
-CC = cc
+CC = gcc
 
 RM = rm -f
 

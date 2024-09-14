@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 15:17:15 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/13 21:12:31 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 13:04:38 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,19 +61,19 @@ int		count_tokens(t_token *tokens);
 void	child_exec_pipes(t_process *process, t_cmd *cmd, int i);
 int		pipe_and_heredocs(t_process *process, pid_t *child, int i);
 int		init_exec_pipes(t_cmd *cmd, pid_t **child, t_process *process);
-void	child_exec_no_pipes(t_process *process, t_cmd *cmd, t_token *cmd_tokens);
-
+void	child_exec_no_pipes(t_process *process, t_cmd *cmd,
+			t_token *cmd_tokens);
 void	free_cmd(t_cmd *cmd);
 void	free_arr(char **arr);
 void	close_pipes(int *pipefd);
 void	clean_here_docs(t_process *process);
 void	create_heredocs(t_process *process, t_token *cmd_list);
 
-int	    is_redir(int flag);
+int		is_redir(int flag);
 void	check_previous(t_token **redir_list, t_token **cmd_list);
 void	advance_redir(t_token **redir_list, t_token **cmd_list);
-int	    check_redirs(t_process *prcs, t_cmd *cmd, t_token *temp, t_token *cmd_list);
-
+int		check_redirs(t_process *prcs, t_cmd *cmd, t_token *temp,
+			t_token *cmd_list);
 void	heredoc_redirection(t_process *process);
 void	input_redirection(t_process *process, t_cmd *cmd, t_token *target);
 void	append_redirection(t_process *process, t_cmd *cmd, t_token *target);

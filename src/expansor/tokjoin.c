@@ -6,7 +6,7 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 01:57:46 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/03 18:08:56 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/14 11:25:20 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ t_token	*expansor(t_token *tok, t_dict *m_env)
 	head = tok;
 	while (tok)
 	{
-		if (tok->flags == DQUOTE || tok->flags == FOLLOW_DQUOTE 
+		if (tok->flags == DQUOTE || tok->flags == FOLLOW_DQUOTE
 			|| tok->flags == STRING || tok->flags == FOLLOW_STRING)
 			expand_string(tok, m_env);
 		tok = tok->next;

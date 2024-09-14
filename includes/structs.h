@@ -6,15 +6,14 @@
 /*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/06 16:57:01 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/02 20:31:06 by vperez-f         ###   ########.fr       */
+/*   Updated: 2024/09/14 13:08:25 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef STRUCTS_H
 # define STRUCTS_H
 
-
-enum flags
+enum e_flags
 {
 	STRING,
 	PIPE,
@@ -31,16 +30,16 @@ enum flags
 
 typedef struct s_token
 {
-	int			flags;
-	int			adv;
-	char		*data;
+	int				flags;
+	int				adv;
+	char			*data;
 	struct s_token	*next;
 }	t_token;
 
 typedef struct s_entry
 {
 	char	*key;
-    char    *value;
+	char	*value;
 	int		is_export;
 	int		is_tombstone;
 }			t_entry;

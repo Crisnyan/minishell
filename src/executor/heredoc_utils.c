@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 20:59:13 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/13 21:18:21 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 13:43:41 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	create_heredocs(t_process *process, t_token *cmd_list)
 	temp = cmd_list;
 	signal(SIGINT, handle_c_heredoc);
 	signal(SIGQUIT, SIG_IGN);
-	while (temp && !global_signal)
+	while (temp && !g_global_signal)
 	{
 		if (temp->flags == HEREDOC)
 		{
@@ -83,6 +83,6 @@ void	create_heredocs(t_process *process, t_token *cmd_list)
 		}
 		temp = temp->next;
 	}
-	if (global_signal)
-		process->m_env->err_code = global_signal;
+	if (g_global_signal)
+		process->m_env->err_code = g_global_signal;
 }

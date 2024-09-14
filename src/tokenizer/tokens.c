@@ -6,7 +6,7 @@
 /*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 00:20:45 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/03 00:28:37 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 11:25:50 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_token	*get_token(char *line, char quote, char *original, int n)
 	{
 		tok = create_special_token(line);
 	}
-	else 
+	else
 	{
 		tok = create_normal_token(line, original, n);
 	}

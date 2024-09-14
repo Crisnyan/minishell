@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 14:16:50 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/13 21:12:38 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 13:43:12 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int	exec_no_pipes(t_process *process)
 	}
 	return (process->m_env->err_code);
 }
-
 
 int	exec_pipes(t_process *prcs)
 {
@@ -74,7 +73,7 @@ int	ft_executor(t_process *process)
 	if (!process->cmd_list)
 		return (-1);
 	process->m_env->err_code = 0;
-	global_signal = 0;
+	g_global_signal = 0;
 	if (!process->n_pipes)
 		exec_no_pipes(process);
 	else
