@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 20:59:13 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/14 20:04:17 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 21:07:33 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	heredoc_prompt(t_process *process, char *delim, int fd)
 		if (!line || !ft_strcmp(line, delim))
 		{
 			if (!line && g_global_signal != 130)
-				ft_printf(STDERR_FILENO, CTRLD_HD, delim);
+				ft_printf(STDERR_FILENO, CTRLD_AUX CTRLD_HD, delim);
 			else if (line && !ft_strcmp(line, delim))
 				free(line);
 			return ;

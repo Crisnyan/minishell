@@ -1,8 +1,0 @@
-//////////|-- TO FIX --|\\\\\\\\\\
-- Mirar los dup2 de los og si close o no close...
-
-- Norminetear todo
-
-
-//////////////////\\\\\\\\\\\\\\\\
-
