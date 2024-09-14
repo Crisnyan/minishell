@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 21:10:25 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/14 19:42:13 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 20:40:20 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,11 @@ void	child_exec_pipes(t_process *process, t_cmd *cmd, int i)
 
 int	pipe_and_heredocs(t_process *process, pid_t *child, int i)
 {
+	if (process->m_env->err_code)
+	{
+		free(child);
+		return (1);
+	}
 	if (pipe(process->pipe))
 	{
 		free(child);

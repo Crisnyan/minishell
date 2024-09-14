@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 21:03:38 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/14 20:02:47 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 20:45:24 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ void	heredoc_redirection(t_process *process)
 	fd = 0;
 	filename = ft_itoa(process->heredoc_count + 1);
 	filename = ft_strattach("/tmp/here-doc", &filename);
-	ft_printf(2, "AT REDIR HEREDOC: %i ----- %s\n", process->heredoc_count, filename);
 	fd = open(filename, O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) < 0)
 	{

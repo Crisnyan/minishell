@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokjoin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 01:57:46 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 11:25:20 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/14 20:53:13 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,8 @@ void	tokjoin(t_token *tok)
 	while (tok)
 	{
 		if (tok->next && (tok->next->flags == FOLLOW_QUOTE
-				|| tok->next->flags == FOLLOW_DQUOTE))
+				|| tok->next->flags == FOLLOW_DQUOTE
+				|| tok->next->flags == FOLLOW_STRING))
 		{
 			join(tok);
 		}

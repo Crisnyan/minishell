@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 21:07:51 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/13 21:18:23 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 20:48:24 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,5 +47,7 @@ int	wait_child_processes(pid_t *childs, int amount)
 		}
 		i++;
 	}
+	if (amount > 1)
+		free(childs);
 	return (status);
 }
