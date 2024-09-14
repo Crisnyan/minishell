@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/14 12:49:22 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 20:34:56 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 21:01:31 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@ extern int	g_global_signal;
 int	check_conditions(t_process *process, t_token *temp)
 {
 	if ((is_redir(temp->flags)) && (!temp->next
-		|| temp->next->flags == PIPE || is_redir(temp->next->flags)))
+			|| temp->next->flags == PIPE || is_redir(temp->next->flags)))
 	{
 		ft_printf(STDERR_FILENO, ERR_SYNTAX, temp->data);
 		process->m_env->err_code = 2;
 		return (2);
 	}
 	else if (temp->flags == PIPE && (!temp->next
-		|| temp->next->flags == PIPE))
+			|| temp->next->flags == PIPE))
 	{
 		ft_printf(STDERR_FILENO, ERR_SYNTAX, temp->data);
 		process->m_env->err_code = 2;

@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/10 15:17:15 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 19:42:00 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/14 21:00:23 by cristian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@
 
 # define CTRLD_AUX			"minishell: warning: here-document delimited"
 # define CTRLD_HD			CTRLD_AUX" by end-of-file (wanted `%s')\n"
-							
+
 int		ft_executor(t_process *process);
 
 int		check_status(int status);
