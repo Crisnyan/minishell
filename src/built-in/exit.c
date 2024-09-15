@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/03 04:59:22 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 13:35:50 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/15 23:58:36 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,21 @@ int	print_exit(char *data)
 	return (exit(2), 2);
 }
 
-static int	check_null(t_token *token)
+static int	check_null(t_token *token, t_process *process)
 {
 	if (token->data == NULL)
 		return (exit(0), 0);
 	if (token->data[0] == '\0')
 		return (print_exit(token->data), 0);
+	if (token->next)
+	{
+		process->m_env->err_code = 1;
+		return (1);
+	}
 	return (0);
 }
 
-int	ft_exit(t_token *token)
+int	ft_exit(t_token *token, t_process *process)
 {
 	int	i;
 	int	neg;
@@ -44,7 +49,8 @@ int	ft_exit(t_token *token)
 	if (!token->next)
 		return (exit(0), 0);
 	token = token->next;
-	check_null(token);
+	if (check_null(token, process))
+		return (ft_printf(STDERR_FILENO, EXIT_ERR_ARGS), 1);
 	if (token->data[i] == '-' && (i++ || 1))
 		neg = 1;
 	while (ft_isdigit(token->data[i]) && i - neg < 20)

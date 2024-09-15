@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 20:12:00 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 19:26:08 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/15 21:28:53 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	check_built_in(t_token *token, t_process *process)
 	else if (!ft_strcmp(token->data, "cd"))
 		return (built_in_cd(token, process));
 	else if (!ft_strcmp(token->data, "exit"))
-		return (ft_exit(token));
+		return (ft_exit(token, process));
 	else if (!ft_strcmp(token->data, "echo"))
 	{
 		process->m_env->err_code = ft_echo(token);

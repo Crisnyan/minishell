@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expansor.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/31 01:25:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/14 13:07:17 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/16 00:01:35 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ void	expand_string(t_token *tok, t_dict *m_env);
 void	rearrange(t_token *dollar, t_token *string);
 void	tokjoin(t_token *tok);
 void	expand_string(t_token *tok, t_dict *m_env);
+void	space_expansor_retoken(t_token *tok);
 t_token	*expansor(t_token *tok, t_dict *m_env);
 
 #endif

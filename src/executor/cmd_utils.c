@@ -6,7 +6,7 @@
 /*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/13 20:54:37 by vpf               #+#    #+#             */
-/*   Updated: 2024/09/13 20:56:53 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/15 20:19:49 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,8 @@ int	format_cmd(t_cmd *cmd, t_dict *m_env, t_token *tokens, int *stat)
 	char	**all_paths;
 
 	if (!tokens || !tokens->data)
+		return (1);
+	if (!tokens->data[0])
 		return (1);
 	ft_bzero(cmd, sizeof(t_cmd));
 	cmd->name = ft_strdup(tokens->data);

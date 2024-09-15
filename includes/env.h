@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
+/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:16:09 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/14 13:06:48 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/15 21:28:45 by vpf              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@
 # define CD_ERROR_SET	"minishell: cd: %s not set\n"
 # define CD_ERROR_PERM	"minishell: cd: %s: Permission denied\n"
 # define ENV_ERROR		"env: \'%s\': No such file or directory\n"
+# define EXIT_ERR_ARGS	"minishell: exit: too many arguments\n"
 
-int				ft_exit(t_token *token);
+int				ft_exit(t_token *token, t_process *process);
 int				ft_strcmp(const char *s1, const char *s2);
 int				init_env(char **envp, t_dict *m_env);
 int				ft_export(char *line, t_dict *dict, int mode);

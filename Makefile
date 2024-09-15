@@ -6,7 +6,7 @@
 #    By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/24 18:34:41 by vperez-f          #+#    #+#              #
-#    Updated: 2024/09/14 15:12:04 by vpf              ###   ########.fr        #
+#    Updated: 2024/09/16 00:02:03 by vpf              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ CFILES = minishell/process_handling.c	\
 		 tokenizer/minishplit.c			\
 		 expansor/expand_string.c		\
 		 expansor/tokjoin.c				\
+		 expansor/expansor_utils.c		\
 		 executor/childs_management.c	\
 		 executor/cmd_utils.c			\
 		 executor/error_management.c	\
