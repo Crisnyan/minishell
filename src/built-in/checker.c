@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   checker.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 20:12:00 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/15 21:28:53 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/16 14:49:37 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,17 @@ int	built_in_env(t_token *token, t_process *process)
 {
 	if (token->next && !(token->next->flags == PIPE))
 	{
-		process->m_env->err_code = 1;
-		return (ft_printf(2, ENV_ERROR, token->next->data), 1);
+		if (token->next->data && (token->next->data[0] == '-'))
+		{
+			process->m_env->err_code = 125;
+			ft_printf(2, ENV_ERROR_OPT, token->next->data);
+		}
+		else
+		{
+			ft_printf(2, ENV_ERROR, token->next->data);
+			process->m_env->err_code = 1;
+		}
+		return (process->m_env->err_code);
 	}
 	print_env(process->m_env);
 	return (0);

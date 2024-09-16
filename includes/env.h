@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/02 15:16:09 by vperez-f          #+#    #+#             */
-/*   Updated: 2024/09/15 21:28:45 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/16 15:53:59 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # define CD_ERROR_SET	"minishell: cd: %s not set\n"
 # define CD_ERROR_PERM	"minishell: cd: %s: Permission denied\n"
 # define ENV_ERROR		"env: \'%s\': No such file or directory\n"
+# define ENV_ERROR_OPT	"env: unrecognized option '%s'(options not allowed)\n"
 # define EXIT_ERR_ARGS	"minishell: exit: too many arguments\n"
 
 int				ft_exit(t_token *token, t_process *process);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokjoin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vpf <vpf@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 01:57:46 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/16 00:00:52 by vpf              ###   ########.fr       */
+/*   Updated: 2024/09/16 16:16:12 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,13 +71,13 @@ t_token	*expansor(t_token *tok, t_dict *m_env)
 	{
 		if (tok->flags == DQUOTE || tok->flags == FOLLOW_DQUOTE
 			|| tok->flags == STRING || tok->flags == FOLLOW_STRING)
+		{
+			expand_string(tok, m_env);
+			if (tok->flags == STRING || tok->flags == FOLLOW_STRING)
 			{
-				expand_string(tok, m_env);
-				if (tok->flags == STRING || tok->flags == FOLLOW_STRING)
-				{
-					space_expansor_retoken(tok);
-				}
+				space_expansor_retoken(tok);
 			}
+		}
 		tok = tok->next;
 	}
 	return (tokjoin(head), head);

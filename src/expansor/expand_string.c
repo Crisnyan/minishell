@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_string.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cristian <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: vperez-f <vperez-f@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/03 01:57:00 by cristian          #+#    #+#             */
-/*   Updated: 2024/09/06 17:17:16 by cristian         ###   ########.fr       */
+/*   Updated: 2024/09/16 16:04:13 by vperez-f         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ static void	case_expand_append(t_token *tok, t_dict *m_env, char **str, int *n)
 		n[J] = n[I] + 1;
 		while (tok->data[n[J]] && tok->data[n[J]] != '$'
 			&& tok->data[n[J]] != '?' && !is_space(tok->data[n[J]])
-			&& !is_quote(tok->data[n[J]]))
+			&& !is_quote(tok->data[n[J]])
+			&& (ft_isalnum(tok->data[n[J]]) || tok->data[n[J]] == '_'))
 		{
 			n[J]++;
 		}
